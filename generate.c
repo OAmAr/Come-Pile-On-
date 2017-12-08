@@ -23,13 +23,10 @@ void  generate_subsec_header(int i,int j, char *s){
 void right_justify(int n) {
   int llen = strlen(line);
   int l, just, j;
-  //fprintf(fpout, "%d\n", llen);
   while(llen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
     for(just = n; just < llen && llen < OUT_WIDTH; just++) {
       if(line[just] == ' ')  {
-        //fprintf(fpout, "%d ", just);
         for(j = llen; j > just; j--) {
-          //fprintf(fpout, "%d ", j);
           line[j] = line[j-1];
         }
         llen++;
@@ -43,6 +40,7 @@ void right_justify(int n) {
 void  generate_formatted_text(char* s){
     int slen = strlen(s);
     int i, j, k, r;
+    char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
 
     i = 0;
     while(s[i] == '\n'|| s[i]==' ')
@@ -60,7 +58,7 @@ void  generate_formatted_text(char* s){
           if(line[j] == '\n') {
             i+=2;
             line[j++] = 0;
-            fprintf(fpout, "%s\n", line);
+            fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
             flag = 0;
             break;
           }
@@ -80,7 +78,7 @@ void  generate_formatted_text(char* s){
 
         if (i <= slen){
           right_justify(space);
-          fprintf(fpout, "%s\n", line);  // swapped the order of this
+          fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
           fflush(fpout); 
         }else{
           //if(line[j-1] == '\n')
