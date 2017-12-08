@@ -24,6 +24,7 @@ void  generate_formatted_text(char* s){
     int slen = strlen(s);
     int i, j, k, r;
     int llen;
+    char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
 
     i = 0;
     while(s[i] == '\n'|| s[i]==' ')
@@ -35,7 +36,7 @@ void  generate_formatted_text(char* s){
           if(line[j] == '\n') {
             i+=2;
             line[j++] = 0;
-            fprintf(fpout, "%s\n", line);
+            fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
             flag = 0;
             break;
           }
@@ -62,15 +63,13 @@ void  generate_formatted_text(char* s){
               slen++;
           }
         }
-        abc de
-        abc  de
         
         //before doing this, add spaces to the lines so that between words over and over until the line is right jutsified
         //what does this look like if theres a single word on the line? or just two?`
 
 
         if (i <= slen){
-          fprintf(fpout, "%s\n", line);  // swapped the order of this
+          fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
           fflush(fpout); 
         }else{
           //if(line[j-1] == '\n')

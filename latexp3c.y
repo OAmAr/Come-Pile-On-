@@ -3,11 +3,13 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 #define  BUF_SIZE       512
 #define YYDEBUG 1
 
 int ws_flag = 0;
 int noin_flag = 0;
+int line_spacing = 0;
 
 #include "latexp3c.tab.h"
 #include "util.c"
@@ -220,6 +222,7 @@ tableofcont      :  TABOCON
 
 linespacing      :  RENEW  LCURLYB  BASELINES  RCURLYB
                             LCURLYB  WORD  RCURLYB
+                    {line_spacing=atoi($6)-1;} 
                  ;
 
 pagenumbers      :  PAGENUM  style2
@@ -259,7 +262,6 @@ horvert          :  VSPACE
 fonts            :  RM  
                  |  IT
                  ;
-
 specialchar      :  SPECCHAR  
                  |  LCURLYB  
                  |  RCURLYB
