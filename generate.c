@@ -6,7 +6,7 @@ void init_output_page(){
 }
 
 void  generate_sec_header(int i, char* s){
-    fprintf(fpout, "\n\n%d %s\n", i, s);
+    fprintf(fpout, "\n\n%d %s\n\n", i, s);
     fflush(fpout);
 
     if (get_gen_toc() == TOC_ON)
@@ -14,7 +14,7 @@ void  generate_sec_header(int i, char* s){
 }
 
 void  generate_subsec_header(int i,int j, char *s){
-    fprintf(fpout, "\n\n%d.%d %s\n", i, j, s);
+    fprintf(fpout, "\n\n%d.%d %s\n\n", i, j, s);
     fflush(fpout);
     if (get_gen_toc() == TOC_ON)
         fprintf(fptoc, "\n%d.%d %s ---------- PAGE %d\n", i, j, s, get_page_no());
@@ -52,7 +52,18 @@ void  generate_formatted_text(char* s){
 
         line[j] = '\0';
         while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0'; 
-        printf("%d", j);
+        slen = j;
+
+        while(slen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
+          for(i = 0; i < slen && slen < OUT_WIDTH; i++) {
+            if(line[i] == ' ')
+              for(j = slen; j > i; j--)
+                line[j] = line[j-1];
+              slen++;
+          }
+        }
+        abc de
+        abc  de
         
         //before doing this, add spaces to the lines so that between words over and over until the line is right jutsified
         //what does this look like if theres a single word on the line? or just two?`
