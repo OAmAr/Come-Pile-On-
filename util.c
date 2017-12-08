@@ -22,9 +22,9 @@ void  incr_lines_so_far(){
 
 int   check_done_page(){
   if (lines_so_far < LINES_PER_PAGE) 
-    return 1;
-  else
     return 0;
+  else
+    return 1;
 }
 
 
