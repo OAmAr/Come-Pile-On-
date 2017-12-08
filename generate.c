@@ -20,18 +20,43 @@ void  generate_subsec_header(int i,int j, char *s){
         fprintf(fptoc, "\n%d.%d %s ---------- PAGE %d\n", i, j, s, get_page_no());
 }
 
+void right_justify(int n) {
+  int llen = strlen(line);
+  int l, just, j;
+  //fprintf(fpout, "%d\n", llen);
+  while(llen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
+    for(just = n; just < llen && llen < OUT_WIDTH; just++) {
+      if(line[just] == ' ')  {
+        //fprintf(fpout, "%d ", just);
+        for(j = llen; j > just; j--) {
+          //fprintf(fpout, "%d ", j);
+          line[j] = line[j-1];
+        }
+        llen++;
+        just++; // skip the next space
+      }
+    }
+  }
+  line[OUT_WIDTH] = 0;
+}
+
 void  generate_formatted_text(char* s){
     int slen = strlen(s);
     int i, j, k, r;
-    int llen;
 
     i = 0;
     while(s[i] == '\n'|| s[i]==' ')
       i+=1;
     for (; i <= slen;){
       int flag = 1;
+      int space = 0;
+      int found_character = 0;
       for (j = 0; ((j < OUT_WIDTH) && (i <= slen)); i++, j++) {
           line[j] = s[i];
+          if(line[j] != ' ')
+            found_character = 1;
+          if(line[j] == ' ' && !space && found_character)
+            space = j;
           if(line[j] == '\n') {
             i+=2;
             line[j++] = 0;
@@ -52,24 +77,9 @@ void  generate_formatted_text(char* s){
 
         line[j] = '\0';
         while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0'; 
-        slen = j;
-
-        while(slen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
-          for(i = 0; i < slen && slen < OUT_WIDTH; i++) {
-            if(line[i] == ' ')
-              for(j = slen; j > i; j--)
-                line[j] = line[j-1];
-              slen++;
-          }
-        }
-        abc de
-        abc  de
-        
-        //before doing this, add spaces to the lines so that between words over and over until the line is right jutsified
-        //what does this look like if theres a single word on the line? or just two?`
-
 
         if (i <= slen){
+          right_justify(space);
           fprintf(fpout, "%s\n", line);  // swapped the order of this
           fflush(fpout); 
         }else{
