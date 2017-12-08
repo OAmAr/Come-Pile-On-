@@ -46,10 +46,10 @@ int yylex();
 latexstatement   :  startdoc  mainbody  enddoc { fprintf(fplog,"Complete\n");}
                  ;
 
-startdoc         :  LBEGIN  DOCUMENT {fprintf(fplog, "started doc\n");} 
+startdoc         :  LBEGIN  DOCUMENT {fprintf(fplog, "started doc\n"); init_lines_so_far();} 
                  ;
 
-enddoc           :  END  DOCUMENT  {fprintf(fplog, "finished doc\n");} 
+enddoc           :  END  DOCUMENT  {fprintf(fplog, "finished doc\n");print_page_number();} 
                  ;
 
 mainbody         :  mainbody  mainoption

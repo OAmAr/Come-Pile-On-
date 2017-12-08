@@ -36,6 +36,18 @@ void right_justify(int n) {
   }
   line[OUT_WIDTH] = 0;
 }
+void print_page_number(){
+    while(! check_done_page()){
+        fprintf(fpout,"\n");
+        incr_lines_so_far();
+    }
+    for(int i=0; i<20; i++)
+        fprintf(fpout, " ");
+    fprintf(fpout, "%d\n", get_page_no());
+    inc_page_no();
+    init_lines_so_far();
+    return;
+}
 
 void vertical_space(char* s) {
   int n = atoi(s);
@@ -167,5 +179,8 @@ void  generate_formatted_text(char* s){
       }
     }
 
+    incr_lines_so_far();
+    if (check_done_page())
+      print_page_number();
   }
 }
