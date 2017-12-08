@@ -57,8 +57,18 @@ cols            (r|l|c)*
 {word}			    {printf(" %s \n", yytext); strcpy(yylval.trans,yytext); return(WORD);} //change
 {ws}			    {printf("ws--%s--ws\n", yytext); 
                     if ((strcmp(yytext, "\n\n") == 0) && (ws_flag == 0)){
-                            strcpy(yylval.trans, "\n    "); return(WS);} //change
-                    else if (ws_flag == 1) return(WS);}
+                        if(!noin_flag)
+                            strcpy(yylval.trans, "\n    "); 
+                        else
+                            strcpy(yylval.trans, "\n");  
+                        noin_flag=0;
+                        return(WS); }
+                   else if (ws_flag == 1) return(WS);}
 
 %%
-
+/*
+{ws}			    {printf("ws--%s--ws\n", yytext); 
+                    if ((strcmp(yytext, "\n\n") == 0) && (ws_flag == 0)){
+                            strcpy(yylval.trans, "\n    "); return(WS);} //change
+                    else if (ws_flag == 1) return(WS);}
+*/

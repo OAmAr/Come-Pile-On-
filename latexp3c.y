@@ -7,6 +7,7 @@
 #define YYDEBUG 1
 
 int ws_flag = 0;
+int noin_flag = 0;
 
 #include "latexp3c.tab.h"
 #include "util.c"
@@ -265,6 +266,7 @@ specialchar      :  SPECCHAR
                  ;
 
 nonewpara        :  NOINDENT
+                 {noin_flag = 0;}
                  ;
 
 reference        :  REF  LCURLYB  WORD  RCURLYB
