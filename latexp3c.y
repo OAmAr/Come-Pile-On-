@@ -9,6 +9,7 @@
 
 int ws_flag = 0;
 int noin_flag = 0;
+int it_flag = 0;
 int line_spacing = 0;
 
 #include "latexp3c.tab.h"
@@ -252,15 +253,17 @@ style1           :  ARABIC1
                  |  CALPH1
                  ;
 
-spacing          :  horvert  LCURLYB  WORD  RCURLYB
+spacing          :  horvert  LCURLYB  WORD  RCURLYB { vertical_space($3); }
                  ;
 
 horvert          :  VSPACE  
                  |  HSPACE
                  ;
 
-fonts            :  RM  
+fonts            :  RM
+                 { it_flag = 0; fprintf(fpout, "\033[0m"); }
                  |  IT
+                 { it_flag = 1; fprintf(fpout, "\033[32;1m"); }
                  ;
 specialchar      :  SPECCHAR  
                  |  LCURLYB  

@@ -1,7 +1,7 @@
 \begin{document}
 \pagenumbering{arabic}
 \arabic{5} 
-\renewcommand{\baselinestretch}{2}
+\renewcommand{\baselinestretch}{1}
 \tableofcontents     
 
 \section{Introduction}
@@ -33,6 +33,6 @@ that establish an environment. These blocks behave in a similar fashion to
 begin/end blocks in a programming language, since they set a scope.  We
 have discussed a number of examples
 
-It is important to note, even at this early stage, that lists may be created
+It is important to even at this early stage, that lists may be created
 within lists, allowing the nesting of blocks and environments.
 \end{document}
