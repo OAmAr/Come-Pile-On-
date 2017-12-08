@@ -1,0 +1,287 @@
+/* THIS IS latexp3code.y */
+%{ /* A YACC FOR PART 3 OF THE PROJECT WHERE VERBATIM AND NESTING WORKS */
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#define  BUF_SIZE       512
+#define YYDEBUG 1
+
+int ws_flag = 0;
+
+#include "latexp3c.tab.h"
+#include "util.c"
+#include "generate.c"
+int yyerror(){}
+int yylex();
+%}
+
+%debug 
+
+%union 
+   {
+      char   trans[BUF_SIZE+1];
+      int    val;
+   }
+
+%start latexstatement
+
+%token  BACKSL    LBEGIN    LCURLYB    DOCUMENT    RCURLYB    END
+%token  WORD      WS        SPECCHAR   CENTER      VERBATIM   SINGLE  
+%token  ITEMIZE   ENUMERATE TABULAR    TABLE       LSQRB      RSQRB
+%token  H         T         B          COLS
+%token  CAPTION   LABEL     DBLBS      ITEM        SECTION    SUBSEC  
+%token  TABOCON   RENEW     BASELINES  PAGENUM     INTEGER    ARABIC1 
+%token  LROMAN1   CROMAN1   LALPH1     CALPH1      VSPACE     HSPACE
+%token  RM        IT        NOINDENT   REF 
+%token  ARABIC2   LROMAN2   CROMAN2    LALPH2      CALPH2
+
+%type <trans> textoption  wsorword WS WORD
+%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2
+
+%%
+latexstatement   :  startdoc  mainbody  enddoc { fprintf(fplog,"Complete\n");}
+                 ;
+
+startdoc         :  LBEGIN  DOCUMENT {fprintf(fplog, "started doc\n");} 
+                 ;
+
+enddoc           :  END  DOCUMENT  {fprintf(fplog, "finished doc\n");} 
+                 ;
+
+mainbody         :  mainbody  mainoption
+                 |  mainoption
+                 ;
+
+mainoption       :  textoption
+                    {
+                      //fprintf(fplog,"Formating \"%s\"\n" ,$1);
+                      generate_formatted_text($1);
+                      //fprintf(fplog,"Formatted to \"%s\"\n" ,$1);
+                      fprintf(fpout, "%s\n" ,$1);
+                    }
+                 |  commentoption
+                 |  latexoptions
+                 ;
+
+textoption       :  textoption  wsorword
+                    {
+                      strcat($$, " ");
+                      strcat($$, $2);
+                      
+                      fprintf(fplog, "one loop in text optio, read %s %s\n", $1, $2);
+                    }
+                 |  wsorword
+                    {
+                      strcpy($$, $1);
+                      
+                      fprintf(fplog,"Finished text option\n");
+                      fprintf(fplog,"  $$ is %s\n", $$);
+                      fprintf(fplog,"  $1 is %s\n", $1);
+                    }
+                 ;
+
+wsorword         :  WS 
+                    {
+                      strcpy($$, $1);
+                    }
+                 |  WORD
+                    {
+                      fprintf(fplog, "found word: %s\n", $1);
+                      
+                      strcpy($$, $1);
+                    }
+                 ;
+
+commentoption    :  SPECCHAR  textoption
+                 ;
+
+latexoptions     :  backsoptions
+                 |  LCURLYB  curlyboptions  RCURLYB
+                 ;
+
+curlyboptions    :  fonts  textoption
+                 ;
+
+backsoptions     :  beginendopts
+                 |  sectionoptions
+                 |  tableofcont
+                 |  linespacing
+                 |  pagenumbers
+                 |  pagenuminit
+                 |  spacing
+                 |  fonts
+                 |  specialchar
+                 |  nonewpara
+                 |  reference
+                 ;
+     
+beginendopts     :  LBEGIN  begcmds  beginblock  endbegin  
+                 ;
+
+begcmds          :  CENTER  
+                 |  VERBATIM  {ws_flag=1;}
+                 |  SINGLE  
+                 |  ITEMIZE  
+                 |  ENUMERATE 
+                 |  TABLE  begtableopts
+                 |  TABULAR  begtabularopts
+                 ;
+
+endbegin         :  END  endcmds
+                 |  endtableopts  TABLE  
+                 ;
+
+endcmds          :  CENTER  
+                 |  VERBATIM  {ws_flag=0;}
+                 |  SINGLE  
+                 |  ITEMIZE  
+                 |  ENUMERATE 
+                 |  TABULAR
+                 ;
+
+beginblock       :  beginendopts
+                 |  textoption /* FOR single or verbatim */
+                                    {printf("single or verb\n");}
+                 |  entrylist  /* FOR center and tabular */
+                                    {printf("center or tabular\n");}
+                 |  listblock  /* FOR item and enumerate */
+                                    {printf("item or enumerate\n");}
+                 ;
+
+listblock        :  listblock  anitem
+                                    {printf("listblockA\n");}
+                 |  anitem
+                                    {printf("listblockB\n");}
+                 ;
+
+anitem           :  ITEM  textoption
+                 |  beginendopts
+                 ;
+
+entrylist        :  entrylist  anentry
+                                    {printf("entrylistA\n");}
+                 |  anentry
+                                    {printf("entrylistB\n");}
+                 ;
+
+anentry          :  entry  DBLBS
+                                    {printf("anentryA\n");}
+                 |  beginendopts
+                                    {printf("anentryB\n");}
+                 ;
+
+entry            :  entry  SPECCHAR  textoption
+                                    {printf("entryA\n");}
+                 |  textoption
+                                    {printf("entryB\n");}
+                 ;
+
+begtableopts     :  LSQRB  position  RSQRB
+                 ;
+                 
+begtabularopts   :  LCURLYB  COLS  RCURLYB
+                 ;
+
+position         :  H  
+                 |  T  
+                 |  B
+                 ;
+
+endtableopts     :  END
+                 |  CAPTION  LCURLYB  textoption  RCURLYB  captionrest
+                 |  labelrest 
+                 ;
+
+captionrest      :  END
+                 |  labelrest
+                 ;
+
+labelrest        :  LABEL  LCURLYB  WORD  RCURLYB  END
+                 ;
+
+sectionoptions   :  SECTION  LCURLYB  textoption  RCURLYB
+                    {
+                      generate_sec_header(get_sec_ctr(), $3);
+                      incr_sec_ctr();
+                    }
+                 |  SUBSEC  LCURLYB  textoption  RCURLYB
+                    {
+                      generate_subsec_header(get_sec_ctr()-1, get_subsec_ctr(), $3);
+                      incr_subsec_ctr();
+                    }
+                 ;
+
+tableofcont      :  TABOCON
+                    {
+                      set_gen_toc();
+                    }
+                 ;
+
+linespacing      :  RENEW  LCURLYB  BASELINES  RCURLYB
+                            LCURLYB  WORD  RCURLYB
+                 ;
+
+pagenumbers      :  PAGENUM  style2
+                    {
+                      set_page_style($2);
+                    }
+                 ;
+
+style2           :  ARABIC2
+                 |  LROMAN2 
+                 |  CROMAN2 
+                 |  LALPH2
+                 |  CALPH2
+                 ;
+
+pagenuminit      :  style1  LCURLYB  WORD  
+                    {
+                      set_page_no($3[0]);
+                    }
+                    RCURLYB
+                 ;
+
+style1           :  ARABIC1
+                 |  LROMAN1 
+                 |  CROMAN1 
+                 |  LALPH1 
+                 |  CALPH1
+                 ;
+
+spacing          :  horvert  LCURLYB  WORD  RCURLYB
+                 ;
+
+horvert          :  VSPACE  
+                 |  HSPACE
+                 ;
+
+fonts            :  RM  
+                 |  IT
+                 ;
+
+specialchar      :  SPECCHAR  
+                 |  LCURLYB  
+                 |  RCURLYB
+                 ;
+
+nonewpara        :  NOINDENT
+                 ;
+
+reference        :  REF  LCURLYB  WORD  RCURLYB
+                 ;
+%%
+#include "lex.yy.c"
+
+
+int main()
+{
+    fpout = fopen("latexout","w");
+    fptoc = fopen("latextoc","w");
+    fplog = fopen("latexlog","w");
+    init_lines_so_far();
+    init_sec_ctr();
+    init_output_page();
+    yydebug = 1;
+    yyparse();
+    return 0;
+}

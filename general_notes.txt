@@ -1,0 +1,37 @@
+1. TOC
+    When flag is on, if you see section, render it and also print to TOC
+    else, render it
+2. Words?
+    Why does nothing print correctly. 
+    got words to print by adding in latex.l strcpy(yylval.trans, yytext), should I have to?
+3. Section headers
+    3 newlines, should be two
+    issue comes from latex.l
+
+TODO:
+  Basic: 35 points total
+    Section/Subsection/Table of Contents
+    Line Spacing/Single-Double-Triple
+    Page Numbering Styles
+    Vertical Spacing
+    Italics/Roman Fonts
+    Paragraphs/Noinden
+    Right Justifcation
+    Begin/End Single Blocks
+    Testing- latex.tst file ??
+  Advanced: 55 Points Total
+    item.tst Itemize Blocks
+    enum.tst Enumberate Blocks
+    cent.tst Center Blocks
+    verb.tst Verbatim Blocks
+    tab.tst  Tabular Blocks
+    cent.tst Table Blocks with Refs/Captions
+    sing.tst Relevant Combinations of Blocks
+    nest.tst Single around Itemize/Enum/Center
+             All Combos of Itemize/Enum
+             Center around Tabular/Verbatim
+Think Done:
+    Table of Contents
+    Right Justification
+
+Done:
