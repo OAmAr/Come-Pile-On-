@@ -1,5 +1,5 @@
 CC=gcc
-EX=cumpile
+EX=compiler
 
 all: latex bison
 	$(CC) latexp3c.tab.c -lfl -g -o $(EX)

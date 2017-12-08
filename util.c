@@ -69,8 +69,8 @@ void  set_gen_toc(){
   DST.generate_toc = 1;
 }
 
-void  set_page_no(char p){
-  DST.page_no_counter = p - '0';
+void  set_page_no(int p){
+  DST.page_no_counter = p ;
 }
 
 int   get_page_no(){

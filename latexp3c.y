@@ -40,13 +40,13 @@ int yylex();
 %token  ARABIC2   LROMAN2   CROMAN2    LALPH2      CALPH2
 
 %type <trans> textoption  wsorword WS WORD
-%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2
+%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts 
 
 %%
 latexstatement   :  startdoc  mainbody  enddoc { fprintf(fplog,"Complete\n");}
                  ;
 
-startdoc         :  LBEGIN  DOCUMENT {fprintf(fplog, "started doc\n"); init_lines_so_far();} 
+startdoc         :  LBEGIN  DOCUMENT {fprintf(fplog, "started doc\n");} 
                  ;
 
 enddoc           :  END  DOCUMENT  {fprintf(fplog, "finished doc\n");print_page_number();} 
@@ -58,9 +58,7 @@ mainbody         :  mainbody  mainoption
 
 mainoption       :  textoption
                     {
-                      //fprintf(fplog,"Formating \"%s\"\n" ,$1);
                       generate_formatted_text($1);
-                      //fprintf(fplog,"Formatted to \"%s\"\n" ,$1);
                       fprintf(fpout, "%s\n" ,$1);
                     }
                  |  commentoption
@@ -72,15 +70,11 @@ textoption       :  textoption  wsorword
                       strcat($$, " ");
                       strcat($$, $2);
                       
-                      fprintf(fplog, "one loop in text optio, read %s %s\n", $1, $2);
                     }
                  |  wsorword
                     {
                       strcpy($$, $1);
                       
-                      fprintf(fplog,"Finished text option\n");
-                      fprintf(fplog,"  $$ is %s\n", $$);
-                      fprintf(fplog,"  $1 is %s\n", $1);
                     }
                  ;
 
@@ -90,8 +84,6 @@ wsorword         :  WS
                     }
                  |  WORD
                     {
-                      fprintf(fplog, "found word: %s\n", $1);
-                      
                       strcpy($$, $1);
                     }
                  ;
@@ -101,9 +93,14 @@ commentoption    :  SPECCHAR  textoption
 
 latexoptions     :  backsoptions
                  |  LCURLYB  curlyboptions  RCURLYB
+                 {it_flag = $2;}
+                    
                  ;
 
 curlyboptions    :  fonts  textoption
+                {     $$ = $1;
+                      generate_formatted_text($2);
+                      fprintf(fpout, "%s\n" ,$2);}
                  ;
 
 backsoptions     :  beginendopts
@@ -201,7 +198,7 @@ captionrest      :  END
 
 labelrest        :  LABEL  LCURLYB  WORD  RCURLYB  END
                  ;
-
+
 sectionoptions   :  SECTION  LCURLYB  textoption  RCURLYB
                     {
                       generate_sec_header(get_sec_ctr(), $3);
@@ -240,7 +237,7 @@ style2           :  ARABIC2
 
 pagenuminit      :  style1  LCURLYB  WORD  
                     {
-                      set_page_no($3[0]);
+                      set_page_no(atoi($3));
                     }
                     RCURLYB
                  ;
@@ -260,9 +257,13 @@ horvert          :  VSPACE
                  ;
 
 fonts            :  RM
-                 { it_flag = 0; fprintf(fpout, "\033[0m"); }
+
+                 {$$=it_flag; it_flag = 0; fprintf(fpout, "\033[0m"); }
                  |  IT
-                 { it_flag = 1; fprintf(fpout, "\033[32;1m"); }
+                 {//it_flag = 1; fprintf(fpout, "\033[32;1m"); 
+                  $$=it_flag;
+                  it_flag = 1; fprintf(fpout, "\e[3m"); 
+                  }
                  ;
 specialchar      :  SPECCHAR  
                  |  LCURLYB  

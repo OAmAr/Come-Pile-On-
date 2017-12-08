@@ -157,13 +157,16 @@ void  generate_formatted_text(char* s){
         break;
       }
     }
+
     if(flag) {
       if (i <= slen){
         if ((line[j-1] != ' ') && (s[i] !=' ')){ // if the last char of the line is not a space and the next character to be read is not a space (a word stretching across the bound)
           for (k = j-1; line[k] != ' '; k--); // Find the last space in the line
+          
           i = i - (j - k - 1); // Reset i back to before the overlapping word (have a feeling this'll break for super long strings with no space)
           j = k; // set k back to the last space so no extra shit gets printed
         }
+        
         for (;s[i] == ' '; i++); // skip any blank spaces so the next line does not begin with them
       }
 
@@ -180,8 +183,11 @@ void  generate_formatted_text(char* s){
       }
     }
 
-    incr_lines_so_far();
+    for (int x = 0; x <=line_spacing; x++)
+        incr_lines_so_far();
+    
     if (check_done_page())
       print_page_number();
   }
 }
+

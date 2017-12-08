@@ -3,8 +3,13 @@ Features Complete:
         changed latex.l to add indents or not depending on flags set in grammar by noindent rules
     line_spacing
         added an variable for the number of newlines and in generate.c added a array of newlines, when printing formatted text pull value from that
+        added loop to increment lines by number of newlines so less lines fit a page with triple space
     right_justify
         add a spacing to line to complete a full line
 
     page_numbers
         added page numbering, not style yet. how to do roman?????????????????????????????????
+
+        changed the way initial page numbers are read, used atoi so that you can start on numbers greater than 0
+
+    

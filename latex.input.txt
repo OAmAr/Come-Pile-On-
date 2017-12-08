@@ -1,6 +1,6 @@
 \begin{document}
 \pagenumbering{arabic}
-\arabic{5} 
+\arabic{1} 
 \renewcommand{\baselinestretch}{1}
 \tableofcontents     
 
@@ -21,9 +21,9 @@ develop formatted documents that are easy to read.
 
 \subsection{Legal Latex Commands}
 
-We have seen that there are many different Latex commands, that can be used
-in many different ways.  However, sometimes, we wish to use a character to
-mean itself, and override its Latex interpretation.  For example, to use
+{\it We have} \it seen that there are many different Latex commands, that can be used
+in many different ways. \rm  However, sometimes, we wish to use a character to
+mean itself , and override its Latex interpretation.  For example, to use
 curly braces, we employ the backslash a set of integers.
 
 \section{Using Latex}
