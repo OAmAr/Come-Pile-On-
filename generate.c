@@ -41,9 +41,10 @@ void print_page_number(){
         fprintf(fpout,"\n");
         incr_lines_so_far();
     }
+    fprintf(fpout, "\n\n");
     for(int i=0; i<20; i++)
         fprintf(fpout, " ");
-    fprintf(fpout, "%d\n", get_page_no());
+    fprintf(fpout, "%d\n\n\n", get_page_no());
     inc_page_no();
     init_lines_so_far();
     return;

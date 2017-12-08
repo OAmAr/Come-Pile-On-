@@ -1,9 +1,9 @@
 /* THIS IS latex.l */
 %{ /* A LEX FOR PART 3 OF THE PROJECT WHERE VERBATIM WORKS */
 %}
-ws		[ \t\n]+
+ws		        [ \t\n]+
 punc            (\.|\,|\!|\?)
-word		({punc}|[a-zA-Z0-9])*
+word		    ({punc}|[a-zA-Z0-9])*
 special         (\%|\_|\&|\$|\#)
 cols            (r|l|c)*
 

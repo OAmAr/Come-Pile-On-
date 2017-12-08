@@ -141,7 +141,6 @@ endcmds          :  CENTER
                  |  ENUMERATE 
                  |  TABULAR
                  ;
-
 beginblock       :  beginendopts
                  |  textoption /* FOR single or verbatim */
                                     {printf("single or verb\n");}
