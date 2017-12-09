@@ -22,6 +22,12 @@ int text_index = 0;
 int tmp_text_index = 0;
 int spec_chars = 0;
 #define INDEX text_index + spec_chars
+int enumerate = 0;
+int enumeration = 1;
+int itemize = 0;
+int item_depth = 0;
+int item_width = 4;
+#define ITEM_SPACING item_depth*item_width
 
 #include "latexp3c.tab.h"
 #include "util.c"
@@ -145,8 +151,16 @@ beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
 begcmds          :  CENTER  
                  |  VERBATIM  {ws_flag=1;}
                  |  SINGLE {single_flag = 1;} 
-                 |  ITEMIZE  
+                 |  ITEMIZE 
+                 {
+                    itemize = 1;
+                    item_depth += 1;
+                 }
                  |  ENUMERATE 
+                 {
+                    enumerate = 1;
+                    item_depth += 1;
+                 }
                  |  TABLE  begtableopts
                  |  TABULAR  begtabularopts
                  ;
@@ -158,8 +172,17 @@ endbegin         :  END  endcmds
 endcmds          :  CENTER  
                  |  VERBATIM  {ws_flag=0;}
                  |  SINGLE {single_flag = 0;} 
-                 |  ITEMIZE  
-                 |  ENUMERATE 
+                 |  ITEMIZE 
+                 {
+                    itemize = 0;
+                    item_depth = 0;
+                 } 
+                 |  ENUMERATE
+                 {
+                    enumerate = 0;
+                    enumeration = 0;
+                    item_depth = 0;
+                 } 
                  |  TABULAR
                  ;
 beginblock       :  beginendopts
@@ -178,6 +201,9 @@ listblock        :  listblock  anitem
                  ;
 
 anitem           :  ITEM  textoption
+                 {
+                    generate_item($2);
+                 }
                  |  beginendopts
                  ;
 

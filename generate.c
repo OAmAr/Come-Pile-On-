@@ -61,6 +61,30 @@ void print_page_number(){
     return;
 }
 
+void print_line() {
+  int temp_line = line_spacing;
+  if (single_flag)
+    line_spacing = 0;
+  char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
+
+  int i;
+  for(i = 0; i < ITEM_SPACING; i++)
+    fprintf(fpout, " ");
+  fprintf(fpout, "%s%s", line, spacing[line_spacing]);
+  fflush(fpout);
+
+  text_index = 0;
+  spec_chars = 0;
+  tmp_text_index = 0;
+  memset(line, 0, 128);
+
+  for (int x = 0; x <=line_spacing; x++)
+    incr_lines_so_far();
+  if (check_done_page())
+    print_page_number();
+  line_spacing = temp_line;
+}
+
 void vertical_space(char* s) {
   int n = atoi(s);
   int i;
@@ -68,72 +92,7 @@ void vertical_space(char* s) {
     fprintf(fpout, "\n");
 }
 
-int substring(char* haystack, char* needle) {
-  if(strcmp(haystack, needle) == 0)
-    return 0;
-  int lenh = strlen(haystack);
-  int lenn = strlen(needle);
-  int i, j;
-  for(i = 0; i < lenh - lenn; i++) {
-    if(*(haystack+i) == *needle) { // matched 1st character
-      int bad = 0;
-      for(j = 1; j < lenn; j++) {
-        if(*(haystack+i+j) != *(needle+j))
-          bad = 1;
-      }
-      if(!bad)
-        return i;
-    }
-  }
-  return -1;
-}
-
-int less_specchars(int length) { // returns length less characters used for italics and whatnot
-  int i = 0;
-  while((i = substring(line+i, "\033[0m")) != -1) {
-    i++; // increment i to search for next substring
-    length -= 4;
-  }
-  i = 0;
-  while((i = substring(line+i, "\e[3m")) != -1) {
-    i++;
-    length -= 4;
-  }
-  return length;
-}
-
-void right_justify() {
-  int length = strlen(line);
-  int llen = less_specchars(length);
-  int i, j, just, n = 0, found_character = 0;
-  for(i = 0; i < length; i++) {
-    if(line[i] != ' ' && !found_character)
-      found_character = 1;
-    if(line[i] == ' ' && found_character){
-      n = i;
-      break;
-    }
-  }
-  while(llen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
-    for(just = n; just < length && llen < OUT_WIDTH; just++) {
-      if(line[just] == ' ')  {
-        for(j = length; j > just; j--) {
-          line[j] = line[j-1];
-        }
-        llen++;
-        length++;
-        just++; // skip the next space
-      }
-    }
-  }
-  line[OUT_WIDTH+spec_chars] = 0;
-}
-
-void  generate_formatted_text(char* s){
-  /*if(it_flag) {
-    generate_italics(s);
-    return;
-  }*/
+/*void generate_formatted_text(char* s){
   line[127] = 0;
   int temp_line = line_spacing;
   if (single_flag)
@@ -176,7 +135,7 @@ void  generate_formatted_text(char* s){
         right_justify();
         text_index = 0;
         spec_chars = 0;
-        fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
+        fprintf(fpout, "%s%s", line, spacing[line_spacing]);
         fflush(fpout); 
       }
     }
@@ -188,5 +147,55 @@ void  generate_formatted_text(char* s){
       print_page_number();
   }
     line_spacing = temp_line;
+}*/
+
+void generate_formatted_text(char* s){
+  int slen = strlen(s);
+  int i, j, k, r;
+
+  i = 0;
+  while(s[i] == '\n'|| s[i]==' ')
+    i+=1;
+  for (; i < slen;){
+    int flag = 1;
+    for (j = INDEX; ((text_index < OUT_WIDTH - ITEM_SPACING) && (i < slen)); i++, j++, text_index++) {
+      line[j] = s[i];
+      if(line[j] == '\n') { // forced new paragraph (\n\n)
+        i+=2;
+        line[j++] = 0;
+        print_line();
+        flag = 0;
+        break;
+      }
+    }
+
+    if(flag) {
+      if (i < slen){
+        if ((line[j-1] != ' ') && (s[i] !=' ')){ // if the last char of the line is not a space and the next character to be read is not a space (a word stretching across the bound)
+          for (k = j-1; line[k] != ' '; k--); // Find the last space in the line
+          i = i - (j - k - 1); // Reset i back to before the overlapping word (have a feeling this'll break for super long strings with no space)
+          j = k; // set k back to the last space so no extra shit gets printed
+        }  
+        for (;s[i] == ' '; i++); // skip any blank spaces so the next line does not begin with them
+      } 
+
+      if (i < slen){
+        line[j] = '\0';
+        while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0';
+        right_justify();
+        print_line(); 
+      }
+    }
+  }
 }
 
+void generate_item(char* s) {
+  print_line();
+  if(enumerate)
+    sprintf(line, "%d. ", enumeration++);
+  else if(itemize)
+    sprintf(line, "- ");
+  text_index += strlen(line);
+  generate_formatted_text(s);
+  print_line();
+}

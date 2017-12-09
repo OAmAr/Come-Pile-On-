@@ -1,7 +1,7 @@
 *.swp
 *.swo
 Session.vim
-cumpile
+compile
 latexlog
 latexout
 latexp3c.output

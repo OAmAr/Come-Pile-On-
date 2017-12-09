@@ -21,7 +21,7 @@ develop formatted documents that are easy to read.
 
 \subsection{Legal Latex Commands}
 
-{\it We have} \it seen that there are many different Latex commands, that can be used
+\it We have seen that there are many different Latex commands, that can be used
 in many different ways. \rm  However, sometimes, we wish to use a character to
 mean itself , and override its Latex interpretation.  For example, to use
 curly braces, we employ the backslash a set of integers.
@@ -35,4 +35,15 @@ have discussed a number of examples
 
 It is important to even at this early stage, that lists may be created
 within lists, allowing the nesting of blocks and environments.
+
+\begin{itemize}
+\item Item 1
+\item Item 2
+\item Item 3
+\end{itemize}
+\begin{enumerate}
+\item Enum 1
+\item Enum 2
+\item Enum 3
+\end{enumerate}
 \end{document}

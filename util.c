@@ -113,3 +113,64 @@ int get_page_style(){
 void  set_page_style(int s){
   DST.page_style = s;
 }
+
+int substring(char* haystack, char* needle) {
+  if(strcmp(haystack, needle) == 0)
+    return 0;
+  int lenh = strlen(haystack);
+  int lenn = strlen(needle);
+  int i, j;
+  for(i = 0; i < lenh - lenn; i++) {
+    if(*(haystack+i) == *needle) { // matched 1st character
+      int bad = 0;
+      for(j = 1; j < lenn; j++) {
+        if(*(haystack+i+j) != *(needle+j))
+          bad = 1;
+      }
+      if(!bad)
+        return i;
+    }
+  }
+  return -1;
+}
+
+int less_specchars(int length) { // returns length less characters used for italics and whatnot
+  int i = 0;
+  while((i = substring(line+i, "\033[0m")) != -1) {
+    i++; // increment i to search for next substring
+    length -= 4;
+  }
+  i = 0;
+  while((i = substring(line+i, "\e[3m")) != -1) {
+    i++;
+    length -= 4;
+  }
+  return length;
+}
+
+void right_justify() {
+  int length = strlen(line);
+  int llen = less_specchars(length);
+  int i, j, just, n = 0, found_character = 0;
+  for(i = 0; i < length; i++) {
+    if(line[i] != ' ' && !found_character)
+      found_character = 1;
+    if(line[i] == ' ' && found_character){
+      n = i;
+      break;
+    }
+  }
+  while(llen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
+    for(just = n; just < length && llen < OUT_WIDTH; just++) {
+      if(line[just] == ' ')  {
+        for(j = length; j > just; j--) {
+          line[j] = line[j-1];
+        }
+        llen++;
+        length++;
+        just++; // skip the next space
+      }
+    }
+  }
+  line[OUT_WIDTH+spec_chars] = 0;
+}
