@@ -152,6 +152,8 @@ void right_justify() {
   int length = strlen(line);
   int llen = less_specchars(length);
   int i, j, just, n = 0, found_character = 0;
+  if (length < 1)
+      return;
   for(i = 0; i < length; i++) {
     if(line[i] != ' ' && !found_character)
       found_character = 1;

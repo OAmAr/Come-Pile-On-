@@ -69,6 +69,15 @@ void print_line() {
     line_spacing = 0;
   char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
 
+  if (center_flag){
+    int len_of_line = strlen(line);
+    int num_of_space_r = (40-len_of_line) / 2;
+    char tmp_line[128];
+    for (int z =0; z < num_of_space_r; tmp_line[z++]=' ');
+    memcpy(tmp_line+num_of_space_r, line,len_of_line+1); 
+    memcpy(line, tmp_line, 128);
+  }
+
   int i;
   for(i = 0; i < ITEM_SPACING; i++)
     fprintf(fpout, " ");
@@ -182,10 +191,11 @@ void generate_formatted_text(char* s){
       } 
 
       if (i < slen){
-        line[j] = '\0'; // terminate the string, probably not necessary anymore
-        while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0'; // Get rif of any hanging ws, probably not necessary any more
-        right_justify(); // This represents text that has hit the width, so right justify it
-        print_line();  // print out the line
+        line[j] = '\0';
+        while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0';
+        if (!center_flag)
+            right_justify();
+        print_line(); 
       }
     }
   }
