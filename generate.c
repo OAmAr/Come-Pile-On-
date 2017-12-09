@@ -36,6 +36,11 @@ void right_justify(int n) {
   }
   line[OUT_WIDTH] = 0;
 }
+
+
+char* roman_page_number(){
+    return "";
+}
 void print_page_number(){
     while(! check_done_page()){
         fprintf(fpout,"\n");
@@ -78,6 +83,9 @@ void generate_italics(char* s) {
   int slen = strlen(s);
   int i, j, k, r;
   char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
+  int temp_line = line_spacing;
+  if (single_flag)
+    line_spacing = 0;
 
   i = 0;
   while(s[i] == '\n'|| s[i]==' ')
@@ -125,6 +133,7 @@ void generate_italics(char* s) {
     }
 
   }
+    line_spacing = temp_line;
 }
 
 void  generate_formatted_text(char* s){
@@ -132,6 +141,10 @@ void  generate_formatted_text(char* s){
     generate_italics(s);
     return;
   }
+
+  int temp_line = line_spacing;
+  if (single_flag)
+    line_spacing = 0;
   int slen = strlen(s);
   int i, j, k, r;
   char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
@@ -189,5 +202,6 @@ void  generate_formatted_text(char* s){
     if (check_done_page())
       print_page_number();
   }
+    line_spacing = temp_line;
 }
 

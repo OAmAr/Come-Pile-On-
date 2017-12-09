@@ -11,6 +11,7 @@ int ws_flag = 0;
 int noin_flag = 0;
 int it_flag = 0;
 int line_spacing = 0;
+int single_flag = 0;
 
 #include "latexp3c.tab.h"
 #include "util.c"
@@ -59,7 +60,7 @@ mainbody         :  mainbody  mainoption
 mainoption       :  textoption
                     {
                       generate_formatted_text($1);
-                      fprintf(fpout, "%s\n" ,$1);
+                      fprintf(fpout, "%s" ,$1);
                     }
                  |  commentoption
                  |  latexoptions
@@ -100,7 +101,7 @@ latexoptions     :  backsoptions
 curlyboptions    :  fonts  textoption
                 {     $$ = $1;
                       generate_formatted_text($2);
-                      fprintf(fpout, "%s\n" ,$2);}
+                      fprintf(fpout, "%s" ,$2);}
                  ;
 
 backsoptions     :  beginendopts
@@ -121,7 +122,7 @@ beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
 
 begcmds          :  CENTER  
                  |  VERBATIM  {ws_flag=1;}
-                 |  SINGLE  
+                 |  SINGLE {single_flag = 1;} 
                  |  ITEMIZE  
                  |  ENUMERATE 
                  |  TABLE  begtableopts
@@ -134,14 +135,14 @@ endbegin         :  END  endcmds
 
 endcmds          :  CENTER  
                  |  VERBATIM  {ws_flag=0;}
-                 |  SINGLE  
+                 |  SINGLE {single_flag = 0;} 
                  |  ITEMIZE  
                  |  ENUMERATE 
                  |  TABULAR
                  ;
 beginblock       :  beginendopts
                  |  textoption /* FOR single or verbatim */
-                                    {printf("single or verb\n");}
+                                    {printf("single or verb\n"); generate_formatted_text($1); fprintf(fpout, "%s", $1);}
                  |  entrylist  /* FOR center and tabular */
                                     {printf("center or tabular\n");}
                  |  listblock  /* FOR item and enumerate */
