@@ -166,7 +166,7 @@ void generate_formatted_text(char* s){
     i+=1;
   for (; i < slen;){
     int flag = 1;
-    for (j = INDEX; ((text_index < OUT_WIDTH - ITEM_SPACING) && (i < slen)); i++, j++, text_index++) {
+    for (j = INDEX; ((text_index < (OUT_WIDTH - ITEM_SPACING)) && (i < slen)); i++, j++, text_index++) {
       line[j] = s[i];
       if(line[j] == '\n') { // forced new paragraph (\n\n)
         i+=2;
