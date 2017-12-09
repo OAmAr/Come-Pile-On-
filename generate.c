@@ -20,24 +20,6 @@ void  generate_subsec_header(int i,int j, char *s){
         fprintf(fptoc, "\n%d.%d %s ---------- PAGE %d\n", i, j, s, get_page_no());
 }
 
-void right_justify(int n) {
-  int llen = strlen(line);
-  int l, just, j;
-  while(llen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
-    for(just = n; just < llen && llen < OUT_WIDTH; just++) {
-      if(line[just] == ' ')  {
-        for(j = llen; j > just; j--) {
-          line[j] = line[j-1];
-        }
-        llen++;
-        just++; // skip the next space
-      }
-    }
-  }
-  line[OUT_WIDTH] = 0;
-}
-
-
 char* roman_page_number(){
     return "";
 }
@@ -62,86 +44,73 @@ void vertical_space(char* s) {
     fprintf(fpout, "\n");
 }
 
-void right_justify_italics(int n) {
-  int llen = strlen(line);
-  int l, just, j;
-  while(llen < 2*OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
-    for(just = n; just < llen - 1 && llen < 2*OUT_WIDTH; just+=1) {
-      if(line[just] == ' ')  {
-        for(j = llen+1; j > just; j-=1) {
-          line[j] = line[j-2];
-        }
-        llen+=2;
-        just+=2; // skip the next space
+int substring(char* haystack, char* needle) {
+  if(strcmp(haystack, needle) == 0)
+    return 0;
+  int lenh = strlen(haystack);
+  int lenn = strlen(needle);
+  int i, j;
+  for(i = 0; i < lenh - lenn; i++) {
+    if(*(haystack+i) == *needle) { // matched 1st character
+      int bad = 0;
+      for(j = 1; j < lenn; j++) {
+        if(*(haystack+i+j) != *(needle+j))
+          bad = 1;
       }
+      if(!bad)
+        return i;
     }
   }
-  line[2*OUT_WIDTH] = 0;
+  return -1;
 }
 
-void generate_italics(char* s) {
-  int slen = strlen(s);
-  int i, j, k, r;
-  char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
-  int temp_line = line_spacing;
-  if (single_flag)
-    line_spacing = 0;
-
-  i = 0;
-  while(s[i] == '\n'|| s[i]==' ')
-    i+=1;
-  for (; i <= slen;){
-    int flag = 1;
-    int space = 0;
-    int found_character = 0;
-    for (j = 0; ((j < OUT_WIDTH*2) && (i <= slen)); i++, j+=2) {
-      line[j] = s[i];
-      line[j+1] = 7;
-      if(line[j] != ' ' && line[j] != 7)
-        found_character = 1;
-      if(line[j] == ' ' && !space && found_character)
-        space = j;
-      if(line[j] == '\n') {
-        i+=2;
-        line[j++] = 0;
-        fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
-        flag = 0;
-        break;
-      }
-    }
-    if(flag) {
-      if (i <= slen){
-        if ((line[j-1] != ' ') && (s[i] !=' ')){ // if the last char of the line is not a space and the next character to be read is not a space (a word stretching across the bound)
-          for (k = j-1; line[k] != ' '; k--); // Find the last space in the line
-          i = i - (j - k - 1); // Reset i back to before the overlapping word (have a feeling this'll break for super long strings with no space)
-          j = k; // set k back to the last space so no extra shit gets printed
-        }
-        for (;s[i] == ' '; i++); // skip any blank spaces so the next line does not begin with them
-      }
-
-      line[j] = '\0';
-      while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0'; 
-
-      if (i <= slen){
-        right_justify_italics(space);
-        fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
-        fflush(fpout); 
-      }else{
-        for(r = 0; r <= j; r++)
-          s[r] = line[r];  /* includes backslash 0 */
-      }
-    }
-
+int less_specchars(int length) { // returns length less characters used for italics and whatnot
+  int i = 0;
+  while((i = substring(line+i, "\033[0m")) != -1) {
+    i++; // increment i to search for next substring
+    length -= 4;
   }
-    line_spacing = temp_line;
+  i = 0;
+  while((i = substring(line+i, "\e[3m")) != -1) {
+    i++;
+    length -= 4;
+  }
+  return length;
+}
+
+void right_justify() {
+  int length = strlen(line);
+  int llen = less_specchars(length);
+  int i, j, just, n = 0, found_character = 0;
+  for(i = 0; i < length; i++) {
+    if(line[i] != ' ' && !found_character)
+      found_character = 1;
+    if(line[i] == ' ' && found_character){
+      n = i;
+      break;
+    }
+  }
+  while(llen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
+    for(just = n; just < length && llen < OUT_WIDTH; just++) {
+      if(line[just] == ' ')  {
+        for(j = length; j > just; j--) {
+          line[j] = line[j-1];
+        }
+        llen++;
+        length++;
+        just++; // skip the next space
+      }
+    }
+  }
+  line[OUT_WIDTH+spec_chars] = 0;
 }
 
 void  generate_formatted_text(char* s){
-  if(it_flag) {
+  /*if(it_flag) {
     generate_italics(s);
     return;
-  }
-
+  }*/
+  line[127] = 0;
   int temp_line = line_spacing;
   if (single_flag)
     line_spacing = 0;
@@ -152,47 +121,39 @@ void  generate_formatted_text(char* s){
   i = 0;
   while(s[i] == '\n'|| s[i]==' ')
     i+=1;
-  for (; i <= slen;){
+  for (; i < slen;){
     int flag = 1;
-    int space = 0;
-    int found_character = 0;
-    for (j = 0; ((j < OUT_WIDTH) && (i <= slen)); i++, j++) {
+    for (j = INDEX; ((text_index < OUT_WIDTH) && (i < slen)); i++, j++, text_index++) {
       line[j] = s[i];
-      if(line[j] != ' ')
-        found_character = 1;
-      if(line[j] == ' ' && !space && found_character)
-        space = j;
-      if(line[j] == '\n') {
+      if(line[j] == '\n') { // forced new paragraph (\n\n)
         i+=2;
         line[j++] = 0;
-        fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
+        fprintf(fpout, "%s%s", line, spacing[line_spacing]); 
+        text_index = 0;
+        spec_chars = 0;
         flag = 0;
         break;
       }
     }
 
     if(flag) {
-      if (i <= slen){
+      if (i < slen){
         if ((line[j-1] != ' ') && (s[i] !=' ')){ // if the last char of the line is not a space and the next character to be read is not a space (a word stretching across the bound)
           for (k = j-1; line[k] != ' '; k--); // Find the last space in the line
-          
           i = i - (j - k - 1); // Reset i back to before the overlapping word (have a feeling this'll break for super long strings with no space)
           j = k; // set k back to the last space so no extra shit gets printed
-        }
-        
+        }  
         for (;s[i] == ' '; i++); // skip any blank spaces so the next line does not begin with them
-      }
+      } 
 
-      line[j] = '\0';
-      while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0'; 
-
-      if (i <= slen){
-        right_justify(space);
+      if (i < slen){
+        line[j] = '\0';
+        while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0';
+        right_justify();
+        text_index = 0;
+        spec_chars = 0;
         fprintf(fpout, "%s%s", line, spacing[line_spacing]);  // swapped the order of this
         fflush(fpout); 
-      }else{
-        for(r = 0; r <= j; r++)
-          s[r] = line[r];  /* includes backslash 0 */
       }
     }
 
