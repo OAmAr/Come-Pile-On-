@@ -39,6 +39,9 @@ within lists, allowing the nesting of blocks and environments.
 \begin{itemize}
 \item Item 1
 \item Item 2
+\begin{itemize}
+\item Item 2.5
+\end{itemize}
 \item Item 3
 \end{itemize}
 \begin{enumerate}

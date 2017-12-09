@@ -175,13 +175,13 @@ endcmds          :  CENTER
                  |  ITEMIZE 
                  {
                     itemize = 0;
-                    item_depth = 0;
+                    item_depth--;
                  } 
                  |  ENUMERATE
                  {
                     enumerate = 0;
                     enumeration = 0;
-                    item_depth = 0;
+                    item_depth--;
                  } 
                  |  TABULAR
                  ;
