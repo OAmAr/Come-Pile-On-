@@ -160,8 +160,8 @@ void right_justify() {
       break;
     }
   }
-  while(llen < OUT_WIDTH) { // Right justify by going through line and adding spaces until it's good
-    for(just = n; just < length && llen < OUT_WIDTH; just++) {
+  while(llen < OUT_WIDTH-ITEM_SPACING) { // Right justify by going through line and adding spaces until it's good
+    for(just = n; just < length && llen < OUT_WIDTH-ITEM_SPACING; just++) {
       if(line[just] == ' ')  {
         for(j = length; j > just; j--) {
           line[j] = line[j-1];
@@ -172,5 +172,4 @@ void right_justify() {
       }
     }
   }
-  line[OUT_WIDTH+spec_chars] = 0;
 }

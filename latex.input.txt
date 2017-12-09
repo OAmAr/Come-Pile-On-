@@ -49,14 +49,4 @@ within lists, allowing the nesting of blocks and environments.
 \end{itemize}
 \item Item 3
 \end{itemize}
-
-\begin{single}
-Finally, there are many other useful commands that involve begin/end blocks,
-that establish an environment. These blocks behave in a similar fashion to
-begin/end blocks in a programming language, since they set a scope.  We
-have discussed a number of examples
-
-It is important to even at this early stage, that lists may be created
-within lists, allowing the nesting of blocks and environments.
-\end{single}
 \end{document}

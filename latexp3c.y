@@ -154,12 +154,12 @@ begcmds          :  CENTER
                  |  ITEMIZE 
                  {
                     itemize++;
-                    item_depth += 1;
+                    item_depth++;
                  }
                  |  ENUMERATE 
                  {
                     enumerate = 1;
-                    item_depth += 1;
+                    item_depth++;
                  }
                  |  TABLE  begtableopts
                  |  TABULAR  begtabularopts
