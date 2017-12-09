@@ -153,7 +153,7 @@ begcmds          :  CENTER
                  |  SINGLE {single_flag = 1;} 
                  |  ITEMIZE 
                  {
-                    itemize = 1;
+                    itemize++;
                     item_depth += 1;
                  }
                  |  ENUMERATE 
@@ -174,7 +174,7 @@ endcmds          :  CENTER
                  |  SINGLE {single_flag = 0;} 
                  |  ITEMIZE 
                  {
-                    itemize = 0;
+                    itemize--;
                     item_depth--;
                  } 
                  |  ENUMERATE
@@ -187,7 +187,11 @@ endcmds          :  CENTER
                  ;
 beginblock       :  beginendopts
                  |  textoption /* FOR single or verbatim */
-                                    {printf("single or verb\n"); generate_formatted_text($1); fprintf(fpout, "%s", $1);}
+                 {  
+                    printf("single or verb\n");
+                    generate_formatted_text($1); 
+                    print_line();
+                 }
                  |  entrylist  /* FOR center and tabular */
                                     {printf("center or tabular\n");}
                  |  listblock  /* FOR item and enumerate */
