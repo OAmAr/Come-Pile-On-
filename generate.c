@@ -38,18 +38,41 @@ void right_justify(int n) {
 }
 
 
-char* roman_page_number(){
-    return "";
-}
 void print_page_number(){
     while(! check_done_page()){
         fprintf(fpout,"\n");
         incr_lines_so_far();
     }
     fprintf(fpout, "\n\n");
-    for(int i=0; i<20; i++)
-        fprintf(fpout, " ");
-    fprintf(fpout, "%d\n\n\n", get_page_no());
+    for(int i=0; i<20; i++) fprintf(fpout, " ");
+    char* page = (char*) malloc(sizeof(char) * 100);
+    char* p=page;
+    int ps = get_page_style();
+    int pn = get_page_no();
+    switch (ps) {
+        case LRoman:
+            convertToRoman(pn,page);
+            for ( ; *p; ++p) *p = tolower(*p);
+            break;
+        case CRoman:
+            convertToRoman( pn,page);
+            for ( ; *p; ++p) *p = toupper(*p);
+            break;
+        case LAlph:
+            sprintf(page, "%c", 'a'+pn-1);
+            break;
+        case CAlph:
+            sprintf(page, "%c", 'A'+pn-1);
+            break;
+        default:
+            sprintf(page, "%d", pn);
+            break;
+    }
+    if ( (ps == LAlph || ps == CAlph) && pn > 26 )
+        sprintf(page, "%d", pn);
+
+    fprintf(fpout, "%s\n\n\n", page);
+    
     inc_page_no();
     init_lines_so_far();
     return;

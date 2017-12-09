@@ -7,6 +7,12 @@
 #define  BUF_SIZE       512
 #define YYDEBUG 1
 
+#define LAlph  1
+#define CAlph  2
+#define LRoman 3
+#define CRoman 4
+#define Arabic 5
+
 int ws_flag = 0;
 int noin_flag = 0;
 int it_flag = 0;
@@ -41,7 +47,7 @@ int yylex();
 %token  ARABIC2   LROMAN2   CROMAN2    LALPH2      CALPH2
 
 %type <trans> textoption  wsorword WS WORD
-%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts 
+%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts style1
 
 %%
 latexstatement   :  startdoc  mainbody  enddoc { fprintf(fplog,"Complete\n");}
@@ -229,25 +235,25 @@ pagenumbers      :  PAGENUM  style2
                     }
                  ;
 
-style2           :  ARABIC2
-                 |  LROMAN2 
-                 |  CROMAN2 
-                 |  LALPH2
-                 |  CALPH2
+style2           :  ARABIC2 {$$=Arabic;}
+                 |  LROMAN2 {$$=LRoman;}
+                 |  CROMAN2 {$$=CRoman;}
+                 |  LALPH2  {$$=LAlph;}
+                 |  CALPH2  {$$=CAlph;}
                  ;
 
-pagenuminit      :  style1  LCURLYB  WORD  
+pagenuminit      :  style1  LCURLYB  WORD  RCURLYB
                     {
                       set_page_no(atoi($3));
+                      set_page_style($1);
                     }
-                    RCURLYB
                  ;
 
-style1           :  ARABIC1
-                 |  LROMAN1 
-                 |  CROMAN1 
-                 |  LALPH1 
-                 |  CALPH1
+style1           :  ARABIC1 {$$=Arabic;}
+                 |  LROMAN1 {$$=LRoman;}
+                 |  CROMAN1 {$$=CRoman;}
+                 |  LALPH1  {$$=LAlph;}
+                 |  CALPH1  {$$=CAlph;}
                  ;
 
 spacing          :  horvert  LCURLYB  WORD  RCURLYB { vertical_space($3); }

@@ -26,6 +26,31 @@ int   check_done_page(){
   else
     return 1;
 }
+/* Took this function from 
+ * https://stackoverflow.com/questions/4986521/how-to-convert-integer-value-to-roman-numeral-string 
+ * TA said that would be okay, hope so
+ * */
+void convertToRoman (unsigned int val, char *res) {
+    char *huns[] = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+    char *tens[] = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+    char *ones[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+    int   size[] = { 0,   1,    2,     3,    2,   1,    2,     3,      4,    2};
+
+    //  Add 'M' until we drop below 1001.
+    while (val >= 1000) {
+        *res++ = 'M';
+        val -= 1000;
+    }
+    // Add each of the correct elements, adjusting as we go.
+
+     strcpy (res, huns[val/100]); res += size[val/100]; val = val % 100;
+     strcpy (res, tens[val/10]);  res += size[val/10];  val = val % 10;
+     strcpy (res, ones[val]);     res += size[val];
+
+     //Finish string off.
+   
+     *res = '\0';
+}
 
 
 struct  doc_symtab {
@@ -80,6 +105,9 @@ int   get_page_no(){
 int   inc_page_no(){
   DST.page_no_counter++;
   return (DST.page_no_counter - 1);
+}
+int get_page_style(){
+  return DST.page_style;
 }
 
 void  set_page_style(int s){

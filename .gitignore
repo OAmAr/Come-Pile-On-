@@ -1,5 +1,6 @@
 *.swp
 *.swo
+Session.vim
 cumpile
 latexlog
 latexout
@@ -8,3 +9,4 @@ latextoc
 latexp3c.tab.c
 latexp3c.tab.h
 lex.yy.c
+
