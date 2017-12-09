@@ -9,7 +9,7 @@ FILE *fplog;
 #define  LINES_PER_PAGE  40
 #define  TOC_ON           1
 
-char  line[2*OUT_WIDTH + 1];
+char  line[128];
 int   lines_so_far;
 
 void  init_lines_so_far(){

@@ -18,6 +18,10 @@ int noin_flag = 0;
 int it_flag = 0;
 int line_spacing = 0;
 int single_flag = 0;
+int text_index = 0;
+int tmp_text_index = 0;
+int spec_chars = 0;
+#define INDEX text_index + spec_chars
 
 #include "latexp3c.tab.h"
 #include "util.c"
@@ -66,7 +70,8 @@ mainbody         :  mainbody  mainoption
 mainoption       :  textoption
                     {
                       generate_formatted_text($1);
-                      fprintf(fpout, "%s" ,$1);
+                      tmp_text_index = text_index;
+                      text_index = 0;
                     }
                  |  commentoption
                  |  latexoptions
@@ -100,14 +105,20 @@ commentoption    :  SPECCHAR  textoption
 
 latexoptions     :  backsoptions
                  |  LCURLYB  curlyboptions  RCURLYB
-                 {it_flag = $2;}
+                 {
+                   it_flag = $2;
+                 }
                     
                  ;
 
 curlyboptions    :  fonts  textoption
-                {     $$ = $1;
-                      generate_formatted_text($2);
-                      fprintf(fpout, "%s" ,$2);}
+                 {    
+                    $$ = $1;
+                    text_index = tmp_text_index;
+                    tmp_text_index = 0;
+                    if(text_index > 0) {line[INDEX] = ' '; text_index++;}
+                    generate_formatted_text($2);
+                 }
                  ;
 
 backsoptions     :  beginendopts
@@ -118,6 +129,11 @@ backsoptions     :  beginendopts
                  |  pagenuminit
                  |  spacing
                  |  fonts
+                 {
+                    text_index = tmp_text_index;
+                    tmp_text_index = 0;
+                    if(text_index > 0) {line[INDEX] = ' '; text_index++;}
+                 }
                  |  specialchar
                  |  nonewpara
                  |  reference
@@ -265,12 +281,23 @@ horvert          :  VSPACE
 
 fonts            :  RM
 
-                 {$$=it_flag; it_flag = 0; fprintf(fpout, "\033[0m"); }
+                 {
+                  $$=it_flag; 
+                  it_flag = 0; 
+                  line[tmp_text_index+spec_chars++] = '\033'; 
+                  line[tmp_text_index+spec_chars++] = '[';
+                  line[tmp_text_index+spec_chars++] = '0';
+                  line[tmp_text_index+spec_chars++] = 'm';
+                 }
                  |  IT
-                 {//it_flag = 1; fprintf(fpout, "\033[32;1m"); 
+                 { 
                   $$=it_flag;
-                  it_flag = 1; fprintf(fpout, "\e[3m"); 
-                  }
+                  it_flag = 1;
+                  line[tmp_text_index+spec_chars++] = '\e'; 
+                  line[tmp_text_index+spec_chars++] = '[';
+                  line[tmp_text_index+spec_chars++] = '3';
+                  line[tmp_text_index+spec_chars++] = 'm'; 
+                 }
                  ;
 specialchar      :  SPECCHAR  
                  |  LCURLYB  
