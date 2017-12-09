@@ -66,6 +66,14 @@ void print_line() {
   if (single_flag)
     line_spacing = 0;
   char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
+  if (center_flag){
+    int len_of_line = strlen(line);
+    int num_of_space_r = (40-len_of_line) / 2;
+    char tmp_line[128];
+    for (int z =0; z < num_of_space_r; tmp_line[z++]=' ');
+    memcpy(tmp_line+num_of_space_r, line,len_of_line+1); 
+    memcpy(line, tmp_line, 128);
+  }
 
   int i;
   for(i = 0; i < ITEM_SPACING; i++)
@@ -182,7 +190,9 @@ void generate_formatted_text(char* s){
       if (i < slen){
         line[j] = '\0';
         while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0';
-        right_justify();
+
+        if (!center_flag)
+            right_justify();
         print_line(); 
       }
     }

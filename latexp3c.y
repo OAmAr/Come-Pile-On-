@@ -29,6 +29,9 @@ int item_depth = 0;
 int item_width = 4;
 #define ITEM_SPACING item_depth*item_width
 
+int center_flag = 0;
+int verb_flag = 0;
+
 #include "latexp3c.tab.h"
 #include "util.c"
 #include "generate.c"
@@ -56,7 +59,7 @@ int yylex();
 %token  RM        IT        NOINDENT   REF 
 %token  ARABIC2   LROMAN2   CROMAN2    LALPH2      CALPH2
 
-%type <trans> textoption  wsorword WS WORD
+%type <trans> textoption  wsorword WS WORD entry
 %type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts style1
 
 %%
@@ -127,13 +130,13 @@ curlyboptions    :  fonts  textoption
                  }
                  ;
 
-backsoptions     :  beginendopts
-                 |  sectionoptions
-                 |  tableofcont
-                 |  linespacing
+backsoptions     :  beginendopts {print_line();}
+                 |  sectionoptions {print_line();}
+                 |  tableofcont {print_line();}
+                 |  linespacing {print_line();}
                  |  pagenumbers
                  |  pagenuminit
-                 |  spacing
+                 |  spacing {print_line();}
                  |  fonts
                  {
                     text_index = tmp_text_index;
@@ -142,13 +145,13 @@ backsoptions     :  beginendopts
                  }
                  |  specialchar
                  |  nonewpara
-                 |  reference
+                 |  reference {print_line();}
                  ;
      
 beginendopts     :  LBEGIN  begcmds  beginblock  endbegin  
                  ;
 
-begcmds          :  CENTER  
+begcmds          :  CENTER  {center_flag=1;}
                  |  VERBATIM  {ws_flag=1;}
                  |  SINGLE {single_flag = 1;} 
                  |  ITEMIZE 
@@ -169,7 +172,7 @@ endbegin         :  END  endcmds
                  |  endtableopts  TABLE  
                  ;
 
-endcmds          :  CENTER  
+endcmds          :  CENTER  {center_flag=0;}
                  |  VERBATIM  {ws_flag=0;}
                  |  SINGLE {single_flag = 0;} 
                  |  ITEMIZE 
@@ -189,11 +192,16 @@ beginblock       :  beginendopts
                  |  textoption /* FOR single or verbatim */
                  {  
                     printf("single or verb\n");
-                    generate_formatted_text($1); 
-                    print_line();
+                    
+                    if (single_flag){ generate_formatted_text($1); print_line();}
+
+                    if (ws_flag){ fprintf(fpout, "%s", $1); }
                  }
                  |  entrylist  /* FOR center and tabular */
-                                    {printf("center or tabular\n");}
+                                    {printf("center or tabular\n");
+
+                                    
+                                    }
                  |  listblock  /* FOR item and enumerate */
                                     {printf("item or enumerate\n");}
                  ;
@@ -218,7 +226,8 @@ entrylist        :  entrylist  anentry
                  ;
 
 anentry          :  entry  DBLBS
-                                    {printf("anentryA\n");}
+                                    {printf("anentryA\n"); if (center_flag) generate_formatted_text($1); print_line();}
+
                  |  beginendopts
                                     {printf("anentryB\n");}
                  ;
@@ -226,7 +235,7 @@ anentry          :  entry  DBLBS
 entry            :  entry  SPECCHAR  textoption
                                     {printf("entryA\n");}
                  |  textoption
-                                    {printf("entryB\n");}
+                                    {printf("entryB\n");strcpy($$,$1);}
                  ;
 
 begtableopts     :  LSQRB  position  RSQRB
