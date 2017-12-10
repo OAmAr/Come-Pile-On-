@@ -165,7 +165,7 @@ void generate_formatted_text(char* s){
   int i, j, k, r;
 
   i = 0;
-  while(s[i] == '\n'|| s[i]==' ')
+  while(!table_flag && (s[i] == '\n'|| s[i]==' '))
     i+=1;
   for (; i < slen;){
     int flag = 1;

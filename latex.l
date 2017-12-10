@@ -47,10 +47,10 @@ cols            (r|l|c)*
 "{tabular}"	    	{printf(" %s \n", yytext);return(TABULAR);}
 "{verbatim}"    	{printf(" %s \n", yytext);return(VERBATIM);}
 "\\vspace"		    {printf(" %s \n", yytext);return(VSPACE);}
-"b"			        {printf(" %s \n", yytext);return(B);}
-"h"			        {printf(" %s \n", yytext);return(H);}
-"t"		    	    {printf(" %s \n", yytext);return(T);}
-{cols}              {printf(" %s \n", yytext);return(COLS);}
+"b"			        {printf(" %s \n", yytext);strcpy(yylval.trans,yytext); return(B);}
+"h"			        {printf(" %s \n", yytext);strcpy(yylval.trans,yytext); return(H);}
+"t"		    	    {printf(" %s \n", yytext);strcpy(yylval.trans,yytext); return(T);}
+{cols}              {printf(" %s \n", yytext);strcpy(yylval.trans, yytext); return(COLS);}
 "{"	    		    {printf(" %s \n", yytext);return(LCURLYB);}
 "}" 			    {printf(" %s \n", yytext);return(RCURLYB);}
 

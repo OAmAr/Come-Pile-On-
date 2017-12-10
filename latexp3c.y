@@ -28,7 +28,7 @@ int itemize = 0;
 int item_depth = 0;
 int item_width = 4;
 #define ITEM_SPACING item_depth*item_width
-
+int table_flag = 0;
 int center_flag = 0;
 int verb_flag = 0;
 
@@ -59,14 +59,19 @@ int yylex();
 %token  RM        IT        NOINDENT   REF 
 %token  ARABIC2   LROMAN2   CROMAN2    LALPH2      CALPH2
 
-%type <trans> textoption  wsorword WS WORD entry
-%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts style1
+%type <trans> textoption  wsorword WS WORD entry COLS H B T position
+%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts style1 begcmds endcmds
 
 %%
 latexstatement   :  startdoc  mainbody  enddoc { fprintf(fplog,"Complete\n");}
                  ;
 
-startdoc         :  LBEGIN  DOCUMENT {fprintf(fplog, "started doc\n");} 
+startdoc         :  LBEGIN  DOCUMENT 
+                 {
+                    fprintf(fplog, "started doc\n"); 
+                    stack = new_block_stack();
+                    table_list = new_list();
+                 } 
                  ;
 
 enddoc           :  END  DOCUMENT  {fprintf(fplog, "finished doc\n");print_page_number();} 
@@ -148,45 +153,93 @@ backsoptions     :  beginendopts {print_line();}
                  |  reference {print_line();}
                  ;
      
-beginendopts     :  LBEGIN  begcmds  beginblock  endbegin  
+beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
+                 {
+                    fprintf(fpout, "[%d]", pop(stack));
+                 } 
                  ;
 
-begcmds          :  CENTER  {center_flag=1;}
-                 |  VERBATIM  {ws_flag=1;}
-                 |  SINGLE {single_flag = 1;} 
+begcmds          :  CENTER  
+                 {
+                    center_flag=1;
+                    $$ = 1;
+                 }
+                 |  VERBATIM  
+                 {
+                    ws_flag=1;
+                    $$ = 2;
+                 }
+                 |  SINGLE 
+                 {
+                    single_flag = 1;
+                    $$ = 3;
+                 } 
                  |  ITEMIZE 
                  {
                     itemize++;
                     item_depth++;
+                    $$ = 4;
                  }
                  |  ENUMERATE 
                  {
                     enumerate = 1;
                     item_depth++;
+                    $$ = 5;
                  }
                  |  TABLE  begtableopts
+                 {
+                    table_flag = 1;
+                    $$ = 6;
+                 }
                  |  TABULAR  begtabularopts
+                 {
+                    $$ = 7;
+                 }
                  ;
 
 endbegin         :  END  endcmds
-                 |  endtableopts  TABLE  
+                 {
+                    push(stack, $2);
+                 }
+                 |  endtableopts  TABLE 
+                 {
+                    print_table(current_table);
+                    table_flag = 0;
+                 } 
                  ;
 
-endcmds          :  CENTER  {center_flag=0;}
-                 |  VERBATIM  {ws_flag=0;}
-                 |  SINGLE {single_flag = 0;} 
+endcmds          :  CENTER  
+                 {
+                    center_flag=0;
+                    $$ = 1;
+                 }
+                 |  VERBATIM  
+                 { 
+                    ws_flag=0;
+                    $$ = 2;
+                 }
+                 |  SINGLE 
+                 {
+                    single_flag = 0;
+                    $$ = 3;
+                 } 
                  |  ITEMIZE 
                  {
                     itemize--;
                     item_depth--;
+                    $$ = 4;
                  } 
                  |  ENUMERATE
                  {
                     enumerate = 0;
                     enumeration = 0;
                     item_depth--;
+                    $$ = 5;
                  } 
                  |  TABULAR
+                 {
+                    $$ = 6;
+                 }
                  ;
 beginblock       :  beginendopts
                  |  textoption /* FOR single or verbatim */
@@ -226,34 +279,54 @@ entrylist        :  entrylist  anentry
                  ;
 
 anentry          :  entry  DBLBS
-                                    {printf("anentryA\n"); if (center_flag) generate_formatted_text($1); print_line();}
+                 {
+                    printf("anentryA\n");
+                    if (center_flag) {
+                        generate_formatted_text($1);
+                        print_line();
+                    } else add_entry(current_table, $1);
+                 }
 
                  |  beginendopts
                                     {printf("anentryB\n");}
                  ;
 
 entry            :  entry  SPECCHAR  textoption
-                                    {printf("entryA\n");}
+                 {
+                    printf("entryA\n");
+                    strcpy($$, $1);
+                    strcat($$, "&");
+                    strcat($$, $3);
+                 }
                  |  textoption
-                                    {printf("entryB\n");strcpy($$,$1);}
+                 {
+                    printf("entryB\n");
+                    strcpy($$,$1);
+                 }
                  ;
 
 begtableopts     :  LSQRB  position  RSQRB
                  {
-                    //Table* table = new_table($2);
+                    current_table = new_table($2);
                  }
                  ;
                  
 begtabularopts   :  LCURLYB  COLS  RCURLYB
+                 {
+                    set_cols(current_table, $2);
+                 }
                  ;
 
-position         :  H  
-                 |  T  
-                 |  B
+position         :  H {strcpy($$, $1);}  
+                 |  T {strcpy($$, $1);}
+                 |  B {strcpy($$, $1);}
                  ;
 
 endtableopts     :  END
                  |  CAPTION  LCURLYB  textoption  RCURLYB  captionrest
+                 {
+                    set_caption(current_table, $3);
+                 }
                  |  labelrest 
                  ;
 
@@ -262,6 +335,9 @@ captionrest      :  END
                  ;
 
 labelrest        :  LABEL  LCURLYB  WORD  RCURLYB  END
+                 {
+                    set_label(current_table, $3);
+                 }
                  ;
 
 sectionoptions   :  SECTION  LCURLYB  textoption  RCURLYB
