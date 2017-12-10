@@ -174,5 +174,36 @@ void right_justify() {
       }
     }
   }
-  line[OUT_WIDTH+spec_chars] = 0;
+}
+
+#define H_POS 0
+#define B_POS 1
+#define T_POS 2
+
+typedef struct latex_table {
+  int* col_spec;
+  char** entries;
+  char* ref;
+  char* caption;
+  int page;
+  int pos;
+  int cols;
+  int rows;
+  int capacity;
+} Table;
+
+Table* new_table(char* position) {
+  Table* table = (Table*)malloc(sizeof(Table));
+  table->col_spec = NULL;
+  table->capacity = 8;
+  table->entries = (char**)malloc(sizeof(char*)*table->capacity);
+  table->ref = NULL;
+  table->caption = NULL;
+  table->page = get_page_no();
+  if(strcmp(position, "b") == 0)
+    table->pos = B_POS;
+  else if(strcmp(position, "t") == 0)
+    table->pos = T_POS;
+  else
+    table->pos = H_POS;
 }

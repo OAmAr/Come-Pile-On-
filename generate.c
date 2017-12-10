@@ -62,10 +62,13 @@ void print_page_number(){
 }
 
 void print_line() {
+  if(strlen(line) == 0)
+    return;
   int temp_line = line_spacing;
   if (single_flag)
     line_spacing = 0;
   char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
+
   if (center_flag){
     int len_of_line = strlen(line);
     int num_of_space_r = (40-len_of_line) / 2;
@@ -94,9 +97,9 @@ void print_line() {
 }
 
 void vertical_space(char* s) {
-  int n = atoi(s);
+  int n = atoi(s); // get int value of input
   int i;
-  for(i = 0; i < n; i++)
+  for(i = 0; i < n; i++) // print out n newlines
     fprintf(fpout, "\n");
 }
 
@@ -168,11 +171,11 @@ void generate_formatted_text(char* s){
     int flag = 1;
     for (j = INDEX; ((text_index < (OUT_WIDTH - ITEM_SPACING)) && (i < slen)); i++, j++, text_index++) {
       line[j] = s[i];
-      if(line[j] == '\n') { // forced new paragraph (\n\n)
-        i+=2;
-        line[j++] = 0;
+      if(line[j] == '\n') { // forced new paragraph (\n\n) so print the line
+        i+=2; // tbh forgot why this is here
+        line[j++] = 0; // Don't actually print the newline, that will be handled by print line
         print_line();
-        flag = 0;
+        flag = 0; // lower the flag so the line isn't printed again
         break;
       }
     }
@@ -190,7 +193,6 @@ void generate_formatted_text(char* s){
       if (i < slen){
         line[j] = '\0';
         while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0';
-
         if (!center_flag)
             right_justify();
         print_line(); 
@@ -200,10 +202,10 @@ void generate_formatted_text(char* s){
 }
 
 void generate_item(char* s) {
-  print_line();
-  if(enumerate)
+  print_line(); // print out a line if it's already in there, probably a better way to do this but shouldn't do any harm
+  if(enumerate) // Add the enumeration to the beginning of the line
     sprintf(line, "%d. ", enumeration++);
-  else if(itemize)
+  else if(itemize) // Add a dash to the beginning of the line
     sprintf(line, "- ");
   text_index += strlen(line);
   generate_formatted_text(s);

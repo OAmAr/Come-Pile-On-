@@ -237,6 +237,9 @@ entry            :  entry  SPECCHAR  textoption
                  ;
 
 begtableopts     :  LSQRB  position  RSQRB
+                 {
+                    //Table* table = new_table($2);
+                 }
                  ;
                  
 begtabularopts   :  LCURLYB  COLS  RCURLYB
