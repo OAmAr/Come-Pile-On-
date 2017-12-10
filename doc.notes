@@ -12,4 +12,9 @@ Features Complete:
 
         changed the way initial page numbers are read, used atoi so that you can start on numbers greater than 0
 
+    center
+        in print_line, checks if center is on and if so it finds number of spaces and pads on the right then copies into line
+        doesn't right justify in format_text if center flag is on
+
+
     
