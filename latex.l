@@ -2,7 +2,7 @@
 %{ /* A LEX FOR PART 3 OF THE PROJECT WHERE VERBATIM WORKS */
 %}
 ws		        [ \t\n]+
-punc            (\.|\,|\!|\?)
+punc            (\.|\,|\!|\?|'|`)
 word		    ({punc}|[a-zA-Z0-9])*
 special         (\%|\_|\&|\$|\#)
 cols            (r|l|c)*
@@ -55,6 +55,7 @@ cols            (r|l|c)*
 "}" 			    {printf(" %s \n", yytext);return(RCURLYB);}
 
 {word}			    {printf(" %s \n", yytext); strcpy(yylval.trans,yytext); return(WORD);} //change
+
 {ws}			    {printf("ws--%s--ws\n", yytext); 
                     if ((strcmp(yytext, "\n\n") == 0) && (ws_flag == 0)){
                         if(!noin_flag)
@@ -63,6 +64,6 @@ cols            (r|l|c)*
                             strcpy(yylval.trans, "\n");  
                         noin_flag=0;
                         return(WS); }
-                   else if (ws_flag == 1) return(WS);}
+                   else if (ws_flag == 1) { strcpy(yylval.trans, yytext); fprintf(fplog,"this is broken-%s-!= -%s-\n", yytext, yylval.trans); return(WS);}}
 
 %%
