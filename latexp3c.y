@@ -13,6 +13,14 @@
 #define CRoman 4
 #define Arabic 5
 
+#define CENTER_CMD 1
+#define VERBATIM_CMD 2
+#define SINGLE_CMD 3
+#define ITEMIZE_CMD 4
+#define ENUMERATE_CMD 5
+#define TABULAR_CMD 6
+#define TABLE_CMD 7 
+
 int ws_flag = 0;
 int noin_flag = 0;
 int it_flag = 0;
@@ -156,45 +164,48 @@ backsoptions     :  beginendopts {print_line();}
      
 beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
                  {
-                    fprintf(fpout, "[%d]", pop(stack));
+                    if(pop(stack) != $2) {
+                        fprintf(fpout, "\n\n\nMISMATCHED BEGIN/END BLOCKS\n\n\n");
+                        exit(1);
+                    }
                  } 
                  ;
 
 begcmds          :  CENTER  
                  {
                     center_flag=1;
-                    $$ = 1;
+                    $$ = CENTER_CMD;
                  }
                  |  VERBATIM  
                  {
                     ws_flag=1;
-                    $$ = 2;
+                    $$ = VERBATIM_CMD;
                  }
                  |  SINGLE 
                  {
                     single_flag = 1;
-                    $$ = 3;
+                    $$ = SINGLE_CMD;
                  } 
                  |  ITEMIZE 
                  {
                     itemize++;
                     item_depth++;
-                    $$ = 4;
+                    $$ = ITEMIZE_CMD;
                  }
                  |  ENUMERATE 
                  {
                     enumerate = 1;
                     item_depth++;
-                    $$ = 5;
+                    $$ = ENUMERATE_CMD;
                  }
                  |  TABLE  begtableopts
                  {
                     table_flag = 1;
-                    $$ = 6;
+                    $$ = TABLE_CMD;
                  }
                  |  TABULAR  begtabularopts
                  {
-                    $$ = 7;
+                    $$ =TABULAR_CMD;
                  }
                  ;
 
@@ -204,6 +215,7 @@ endbegin         :  END  endcmds
                  }
                  |  endtableopts  TABLE 
                  {
+                    push(stack, TABLE_CMD);
                     print_table(current_table);
                     table_flag = 0;
                  } 
@@ -212,34 +224,34 @@ endbegin         :  END  endcmds
 endcmds          :  CENTER  
                  {
                     center_flag=0;
-                    $$ = 1;
+                    $$ = CENTER_CMD;
                  }
                  |  VERBATIM  
                  { 
                     ws_flag=0;
-                    $$ = 2;
+                    $$ = VERBATIM_CMD;
                  }
                  |  SINGLE 
                  {
                     single_flag = 0;
-                    $$ = 3;
+                    $$ = SINGLE_CMD;
                  } 
                  |  ITEMIZE 
                  {
                     itemize--;
                     item_depth--;
-                    $$ = 4;
+                    $$ = ITEMIZE_CMD;
                  } 
                  |  ENUMERATE
                  {
                     enumerate = 0;
                     enumeration = 0;
                     item_depth--;
-                    $$ = 5;
+                    $$ = ENUMERATE_CMD;
                  } 
                  |  TABULAR
                  {
-                    $$ = 6;
+                    $$ = TABULAR_CMD;
                  }
                  ;
 beginblock       :  beginendopts

@@ -70,7 +70,7 @@ way of saying things\\
 \begin{table}[h]
 \begin{tabular}{rcl}
 No. & XXXX & XX\\
-One & XX & YYY\\
+One & XX  YYY\\
 TwoTwo & ZZ & CCCC\\
 \end{tabular}
 \caption{A Table of Latex Commands!!}

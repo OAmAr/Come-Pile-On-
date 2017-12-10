@@ -197,6 +197,7 @@ typedef struct latex_table {
   int rows;
   int capacity;
   int id;
+  int printed;
 } Table;
 
 Table* current_table = NULL;
@@ -244,6 +245,7 @@ Table* new_table(char* position) {
   if(table_list == NULL) table_list = new_list();
   add_table(table_list, table);
   table->id = table_list->count;
+  table->printed = 0;
   return table;
 }
 
@@ -268,7 +270,24 @@ void set_caption(Table* table, char* caption) {
   strcpy(table->caption, caption);
 }
 
+void check_entry(Table* table, char* entry) {
+  int i = 0;
+  int count = 0;
+  while(1) { // get # of &'s
+    int next = substring(entry+i, "&");
+    if(next < 0) break;
+    i += next + 1;
+    count++;
+  }
+  if(count != table->cols-1) { // check that count matches the number of cols-1
+    fprintf(fpout, "\n\n\nError compiling table %d:\nColumn count of entry '%s' does not match table spec (cols = %d)\n\n\n",
+      table->id, entry, table->cols);
+    exit(1);
+  }
+}
+
 void add_entry(Table* table, char* entry) {
+  check_entry(table, entry);
   if(table->rows == table->capacity) {
     table->capacity *= 2;
     table->entries = (char**)realloc(table->entries, sizeof(char*)*table->capacity);
@@ -362,6 +381,7 @@ void print_table(Table* table) {
     strcat(buf, table->caption);
   generate_formatted_text(buf);
   print_line();
+  table->printed = 1;
 }
 
 typedef struct type_checking_stack {
@@ -386,7 +406,6 @@ void push(BlockStack* stack, int n) {
     stack->data = (int*)realloc(stack->data, stack->capacity);
   }
   stack->data[stack->count++] = n;
-  fprintf(fpout, "(%d)", n);
 }
 
 int pop(BlockStack* stack) {
