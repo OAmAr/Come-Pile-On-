@@ -86,6 +86,7 @@ mainoption       :  textoption
                       generate_formatted_text($1);
                       tmp_text_index = text_index;
                       text_index = 0;
+                      print_line();
                     }
                  |  commentoption
                  |  latexoptions
@@ -93,7 +94,7 @@ mainoption       :  textoption
 
 textoption       :  textoption  wsorword
                     {
-                      strcat($$, " ");
+                      if (!ws_flag) strcat($$, " ");
                       strcat($$, $2);
                       
                     }
@@ -246,15 +247,12 @@ beginblock       :  beginendopts
                  {  
                     printf("single or verb\n");
                     
-                    if (single_flag){ generate_formatted_text($1); print_line();}
+                    if (single_flag) { generate_formatted_text($1); print_line();}
 
-                    if (ws_flag){ fprintf(fpout, "%s", $1); }
+                    if (ws_flag)     { fprintf(fpout, "%s", $1); }
                  }
                  |  entrylist  /* FOR center and tabular */
-                                    {printf("center or tabular\n");
-
-                                    
-                                    }
+                                    {printf("center or tabular\n");}
                  |  listblock  /* FOR item and enumerate */
                                     {printf("item or enumerate\n");}
                  ;
@@ -423,7 +421,7 @@ specialchar      :  SPECCHAR
                  ;
 
 nonewpara        :  NOINDENT
-                 {noin_flag = 0;}
+                 {noin_flag = 1;}
                  ;
 
 reference        :  REF  LCURLYB  WORD  RCURLYB

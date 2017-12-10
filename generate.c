@@ -54,7 +54,7 @@ void print_page_number(){
     if ( (ps == LAlph || ps == CAlph) && pn > 26 )
         sprintf(page, "%d", pn);
 
-    fprintf(fpout, "%s\n\n\n", page);
+    fprintf(fpout, "%s\n\n", page);
     
     inc_page_no();
     init_lines_so_far();

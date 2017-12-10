@@ -22,7 +22,7 @@ develop formatted documents that are easy to read.
 \subsection{Legal Latex Commands}
 
 \it We have seen that there are many different Latex commands, that can be used
-in many different ways. \rm  However, sometimes, we wish to use a character to
+in many different ways. \rm However, sometimes, we wish to use a character to
 mean itself , and override its Latex interpretation.  For example, to use
 curly braces, we employ the backslash a set of integers.
 
@@ -33,6 +33,7 @@ that establish an environment. These blocks behave in a similar fashion to
 begin/end blocks in a programming language, since they set a scope.  We
 have discussed a number of examples
 \noindent
+
 It is important to even at this early stage, that lists may be created
 within lists, allowing the nesting of blocks and environments.
 
@@ -75,5 +76,14 @@ TwoTwo & ZZ & CCCC\\
 \caption{A Table of Latex Commands!!}
 \label{latexcmds}
 \end{table}
+
+\begin{verbatim}
+It is important to even at this early stage, that lists may be created
+within                      lists, allowing the nesting of blocks and environments.
+ay booboo
+lets get some lunch
+\end{verbatim}
+Ok and now we're back to non-verbatim here's a bunch of spaces                 and we're good..
+Why did that not work? Well it works now
 
 \end{document}
