@@ -344,7 +344,7 @@ int pop(Stack* stack) {
 }
 
 int top(Stack* stack) {
-  return stack->data[stack->count];
+  return stack->data[stack->count-1];
 }
 
 Queue* new_queue() {

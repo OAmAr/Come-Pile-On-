@@ -30,7 +30,8 @@
 #define L_COL 			    2
 
 #define INDEX text_index + spec_chars
-#define ITEM_SPACING item_depth*item_width
+#define ITEM_DEPTH itemize_stack->count
+#define ITEM_SPACING ITEM_DEPTH*item_width
 
 typedef struct latex_table {
   int* col_spec;
@@ -82,6 +83,8 @@ Table* current_table = NULL;
 Queue* b_queue = NULL;
 Queue* t_queue = NULL;
 Stack* block_stack = NULL;
+Stack* itemize_stack = NULL;
+Stack* enumeration_stack = NULL;
 
 int ws_flag = 0;
 int noin_flag = 0;
@@ -92,9 +95,7 @@ int text_index = 0;
 int tmp_text_index = 0;
 int spec_chars = 0;
 int enumerate = 0;
-int enumeration = 1;
 int itemize = 0;
-int item_depth = 0;
 int item_width = 4;
 int table_flag = 0;
 int center_flag = 0;

@@ -168,9 +168,12 @@ void generate_formatted_text(char* s){
 
 void generate_item(char* s) {
   print_line(); // print out a line if it's already in there, probably a better way to do this but shouldn't do any harm
-  if(enumerate) // Add the enumeration to the beginning of the line
-    sprintf(line, "%d. ", enumeration++);
-  else if(itemize) // Add a dash to the beginning of the line
+  if(top(itemize_stack) == ENUMERATE_CMD) {// Add the enumeration to the beginning of the line
+    int top = pop(enumeration_stack);
+    sprintf(line, "%d. ", top);
+    push(enumeration_stack, top+1);
+  }
+  else if(top(itemize_stack) == ITEMIZE_CMD) // Add a dash to the beginning of the line
     sprintf(line, "- ");
   text_index += strlen(line);
   generate_formatted_text(s);

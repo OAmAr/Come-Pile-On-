@@ -46,6 +46,8 @@ startdoc         :  LBEGIN  DOCUMENT
                  {
                     fprintf(fplog, "started doc\n"); 
                     block_stack = new_stack();
+                    itemize_stack = new_stack();
+                    enumeration_stack = new_stack();
                     b_queue = new_queue();
                     t_queue = new_queue();
                  } 
@@ -170,14 +172,13 @@ begcmds          :  CENTER
                  } 
                  |  ITEMIZE 
                  {
-                    itemize++;
-                    item_depth++;
+                    push(itemize_stack, ITEMIZE_CMD);
                     $$ = ITEMIZE_CMD;
                  }
                  |  ENUMERATE 
                  {
-                    enumerate = 1;
-                    item_depth++;
+                    push(itemize_stack, ENUMERATE_CMD);
+                    push(enumeration_stack, 1);
                     $$ = ENUMERATE_CMD;
                  }
                  |  TABLE  begtableopts
@@ -221,15 +222,13 @@ endcmds          :  CENTER
                  } 
                  |  ITEMIZE 
                  {
-                    itemize--;
-                    item_depth--;
+                    pop(itemize_stack);
                     $$ = ITEMIZE_CMD;
                  } 
                  |  ENUMERATE
                  {
-                    enumerate = 0;
-                    enumeration = 1;
-                    item_depth--;
+                    pop(itemize_stack);
+                    pop(enumeration_stack);
                     $$ = ENUMERATE_CMD;
                  } 
                  |  TABULAR
