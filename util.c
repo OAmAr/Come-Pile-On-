@@ -401,7 +401,7 @@ BlockStack* new_block_stack() {
 BlockStack* stack = NULL;
 
 void push(BlockStack* stack, int n) {
-  if(stack->count = stack->capacity) {
+  if(stack->count == stack->capacity) {
     stack->capacity *= 2;
     stack->data = (int*)realloc(stack->data, stack->capacity);
   }

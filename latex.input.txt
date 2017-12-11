@@ -67,10 +67,10 @@ a stupid anime\\
 way of saying things\\
 \end{center}
 
-\begin{table}[h]
+\begin{table}[t]
 \begin{tabular}{rcl}
 No. & XXXX & XX\\
-One & XX  YYY\\
+One & XX  & YYY\\
 TwoTwo & ZZ & CCCC\\
 \end{tabular}
 \caption{A Table of Latex Commands!!}
@@ -85,5 +85,23 @@ lets get some lunch
 \end{verbatim}
 Ok and now we're back to non-verbatim here's a bunch of spaces                 and we're good..
 Why did that not work? Well it works now
+
+
+Finally, there are many other useful commands that involve begin/end blocks,
+that establish an environment. These blocks behave in a similar fashion to
+begin/end blocks in a programming language, since they set a scope.  We
+have discussed a number of examples
+
+\begin{center}
+A haiku is like \\
+a stupid anime\\
+way of saying things\\
+\end{center}
+
+Ok and now we're back to non-verbatim here's a bunch of spaces                 and we're good..
+Why did that not work? Well it works now
+
+
+begin/end blocks in a programming language, since they set a scope.  We
 
 \end{document}
