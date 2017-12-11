@@ -67,10 +67,10 @@ a stupid anime\\
 way of saying things\\
 \end{center}
 
-\begin{table}[h]
+\begin{table}[t]
 \begin{tabular}{rcl}
 No. & XXXX & XX\\
-One & XX & YYY\\
+One & XX  & YYY\\
 TwoTwo & ZZ & CCCC\\
 \end{tabular}
 \caption{A Table of Latex Commands!!}

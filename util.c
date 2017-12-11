@@ -328,7 +328,7 @@ Stack* new_stack() {
   return stack;
 }
 
-void push(Stack* stack, int n) {
+void push(BlockStack* stack, int n) {
   if(stack->count == stack->capacity) {
     stack->capacity *= 2;
     stack->data = (int*)realloc(stack->data, stack->capacity);

@@ -50,7 +50,7 @@ startdoc         :  LBEGIN  DOCUMENT
                  } 
                  ;
 
-enddoc           :  END  DOCUMENT  {fprintf(fplog, "finished doc\n");print_page_number();} 
+enddoc           :  END  DOCUMENT  {fprintf(fplog, "finished doc\n"); end_doc_cleanup();} 
                  ;
 
 mainbody         :  mainbody  mainoption
@@ -168,7 +168,7 @@ begcmds          :  CENTER
                  }
                  |  TABLE  begtableopts
                  {
-                    table_flag = 1;
+                    //table_flag = 1;
                     $$ = TABLE_CMD;
                  }
                  |  TABULAR  begtabularopts
@@ -184,8 +184,8 @@ endbegin         :  END  endcmds
                  |  endtableopts  TABLE 
                  {
                     push(block_stack, TABLE_CMD);
-                    print_table(current_table);
-                    table_flag = 0;
+                    if (current_table->pos==H_POS) print_table(current_table);
+                    //table_flag = 0;
                  } 
                  ;
 
