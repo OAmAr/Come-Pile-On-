@@ -52,7 +52,7 @@ void print_page_number(){
         sprintf(page, "%d", pn);
 
     fprintf(fpout, "%s\n\n", page);
-
+    free(page);
     inc_page_no();
     init_lines_so_far();
 

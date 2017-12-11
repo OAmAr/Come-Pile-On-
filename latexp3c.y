@@ -36,7 +36,7 @@ int yylex();
 %token  ARABIC2   LROMAN2   CROMAN2    LALPH2      CALPH2
 
 %type <trans> textoption  wsorword WS WORD entry COLS H B T position
-%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts style1 begcmds endcmds
+%type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts style1 begcmds endcmds horvert VSPACE HSPACE
 
 %%
 latexstatement   :  startdoc  mainbody  enddoc { fprintf(fplog,"Complete\n");}
@@ -99,6 +99,19 @@ latexoptions     :  backsoptions
                  |  LCURLYB  curlyboptions  RCURLYB
                  {
                    it_flag = $2;
+                   if(it_flag) {
+                    line[text_index+spec_chars++] = '\e'; 
+                    line[text_index+spec_chars++] = '[';
+                    line[text_index+spec_chars++] = '3';
+                    line[text_index+spec_chars++] = 'm';
+                    line[(text_index++)+spec_chars] = ' ';
+                   } else {
+                    line[text_index+spec_chars++] = '\033'; 
+                    line[text_index+spec_chars++] = '[';
+                    line[text_index+spec_chars++] = '0';
+                    line[text_index+spec_chars++] = 'm';
+                    line[(text_index++)+spec_chars] = ' ';
+                   }
                  }
                     
                  ;
@@ -187,6 +200,7 @@ endbegin         :  END  endcmds
                     if (current_table->pos==B_POS) enqueue(b_queue, current_table);
                     else if(current_table->pos==T_POS) enqueue(t_queue, current_table);
                     else print_table(current_table);
+                    table_flag = 0;
                  } 
                  ;
 
@@ -214,7 +228,7 @@ endcmds          :  CENTER
                  |  ENUMERATE
                  {
                     enumerate = 0;
-                    enumeration = 0;
+                    enumeration = 1;
                     item_depth--;
                     $$ = ENUMERATE_CMD;
                  } 
@@ -260,10 +274,11 @@ entrylist        :  entrylist  anentry
 anentry          :  entry  DBLBS
                  {
                     printf("anentryA\n");
-                    if (center_flag) {
+                    if(table_flag) add_entry(current_table, $1);
+                    else if (center_flag) {
                         generate_formatted_text($1);
                         print_line();
-                    } else add_entry(current_table, $1);
+                    }
                  }
 
                  |  beginendopts
@@ -287,6 +302,7 @@ entry            :  entry  SPECCHAR  textoption
 begtableopts     :  LSQRB  position  RSQRB
                  {
                     current_table = new_table($2);
+                    table_flag = 1;
                  }
                  ;
                  
@@ -369,11 +385,21 @@ style1           :  ARABIC1 {$$=Arabic;}
                  |  CALPH1  {$$=CAlph;}
                  ;
 
-spacing          :  horvert  LCURLYB  WORD  RCURLYB { vertical_space($3); }
+spacing          :  horvert  LCURLYB  WORD  RCURLYB 
+                 { 
+                    if($1 == Vspace)
+                        vertical_space($3);
+                 }
                  ;
 
-horvert          :  VSPACE  
+horvert          :  VSPACE
+                 {
+                    $$ = Vspace;
+                 }  
                  |  HSPACE
+                 {
+                    $$ = Hspace;
+                 }
                  ;
 
 fonts            :  RM

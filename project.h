@@ -6,6 +6,9 @@
 #define CRoman 			    4
 #define Arabic 			    5
 
+#define Vspace          1
+#define Hspace          2
+
 #define CENTER_CMD 		  1
 #define VERBATIM_CMD 	  2
 #define SINGLE_CMD 		  3
@@ -103,8 +106,8 @@ int current_table_id = 1;
 
 // generate.c
 void init_output_page();
-void  generate_sec_header(int i, char* s);
-void  generate_subsec_header(int i,int j, char *s);
+void generate_sec_header(int i, char* s);
+void generate_subsec_header(int i,int j, char *s);
 void print_bottom();
 void try_bottom();
 void print_page_number();

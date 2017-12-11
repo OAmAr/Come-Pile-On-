@@ -273,6 +273,7 @@ char* table_justify(char* s, int len, int format, int should_space) {
 }
 
 void print_table(Table* table) {
+  int tmp_flag = table_flag;
   table_flag = 1;
   int i, j, k, len;
   int cols = table->cols;
@@ -309,7 +310,7 @@ void print_table(Table* table) {
     sprintf(buf, "%s%s", table->id_str, table->caption);
   generate_formatted_text(buf);
   print_line();
-  table_flag = 0;
+  table_flag = tmp_flag;
   free_table(table);
 }
 
