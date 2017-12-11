@@ -103,63 +103,6 @@ void vertical_space(char* s) {
     fprintf(fpout, "\n");
 }
 
-/*void generate_formatted_text(char* s){
-  line[127] = 0;
-  int temp_line = line_spacing;
-  if (single_flag)
-    line_spacing = 0;
-  int slen = strlen(s);
-  int i, j, k, r;
-  char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
-
-  i = 0;
-  while(s[i] == '\n'|| s[i]==' ')
-    i+=1;
-  for (; i < slen;){
-    int flag = 1;
-    for (j = INDEX; ((text_index < OUT_WIDTH) && (i < slen)); i++, j++, text_index++) {
-      line[j] = s[i];
-      if(line[j] == '\n') { // forced new paragraph (\n\n)
-        i+=2;
-        line[j++] = 0;
-        fprintf(fpout, "%s%s", line, spacing[line_spacing]); 
-        text_index = 0;
-        spec_chars = 0;
-        flag = 0;
-        break;
-      }
-    }
-
-    if(flag) {
-      if (i < slen){
-        if ((line[j-1] != ' ') && (s[i] !=' ')){ // if the last char of the line is not a space and the next character to be read is not a space (a word stretching across the bound)
-          for (k = j-1; line[k] != ' '; k--); // Find the last space in the line
-          i = i - (j - k - 1); // Reset i back to before the overlapping word (have a feeling this'll break for super long strings with no space)
-          j = k; // set k back to the last space so no extra shit gets printed
-        }  
-        for (;s[i] == ' '; i++); // skip any blank spaces so the next line does not begin with them
-      } 
-
-      if (i < slen){
-        line[j] = '\0';
-        while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0';
-        right_justify();
-        text_index = 0;
-        spec_chars = 0;
-        fprintf(fpout, "%s%s", line, spacing[line_spacing]);
-        fflush(fpout); 
-      }
-    }
-
-    for (int x = 0; x <=line_spacing; x++)
-        incr_lines_so_far();
-    
-    if (check_done_page())
-      print_page_number();
-  }
-    line_spacing = temp_line;
-}*/
-
 void generate_formatted_text(char* s){
   int slen = strlen(s);
   int i, j, k, r;

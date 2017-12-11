@@ -70,7 +70,7 @@ way of saying things\\
 \begin{table}[h]
 \begin{tabular}{rcl}
 No. & XXXX & XX\\
-One & XX  YYY\\
+One & XX & YYY\\
 TwoTwo & ZZ & CCCC\\
 \end{tabular}
 \caption{A Table of Latex Commands!!}
@@ -85,5 +85,15 @@ lets get some lunch
 \end{verbatim}
 Ok and now we're back to non-verbatim here's a bunch of spaces                 and we're good..
 Why did that not work? Well it works now
+
+Do greatest at in learning steepest. Breakfast extremity suffering one who all otherwise suspected. He at no nothing forbade up moments. Wholly uneasy at missed be of pretty whence. John way sir high than law who week. Surrounded prosperous introduced it if is up dispatched. Improved so strictly produced answered elegance is. 
+
+\begin{verbatim}
+Was drawing natural fat respect husband. An as noisy an offer drawn blush place. These tried for way joy wrote witty. In mr began music weeks after at begin. Education no dejection so direction pretended household do to. Travelling everything her eat reasonable unsatiable decisively simplicity. Morning request be lasting it fortune demands highest of. 
+\end{verbatim}
+
+Increasing impression interested expression he my at. Respect invited request charmed me warrant to. Expect no pretty as do though so genius afraid cousin. Girl when of ye snug poor draw. Mistake totally of in chiefly. Justice visitor him entered for. Continue delicate as unlocked entirely mr relation diverted in. Known not end fully being style house. An whom down kept lain name so at easy. 
+
+Sportsman do offending supported extremity breakfast by liste
 
 \end{document}

@@ -1,20 +1,5 @@
 /* THIS IS THE util.c FILE */
 
-FILE *fpout;
-FILE *fptoc;
-FILE *fplog;
-
-#define  OUT_WIDTH       40
-#define  SPACE_LEFT       5
-#define  LINES_PER_PAGE  40
-#define  TOC_ON           1
-
-char  line[128];
-int   lines_so_far;
-
-void print_line();
-void generate_formatted_text(char* s);
-
 void  init_lines_so_far(){
   lines_so_far = 0;
 }
@@ -54,19 +39,6 @@ void convertToRoman (unsigned int val, char *res) {
    
      *res = '\0';
 }
-
-
-struct  doc_symtab {
-      int     page_no_counter;
-      int     page_style;
-      int     line_spacing;
-      int     current_font;
-      int     generate_toc;
-      int     section_counter;
-      int     subsect_counter;
-};
-
-struct  doc_symtab  DST;
 
 void  init_sec_ctr(){
   DST.section_counter = 1;
@@ -179,35 +151,6 @@ void right_justify() {
   }
 }
 
-#define H_POS 0
-#define B_POS 1
-#define T_POS 2
-#define R_COL 0
-#define C_COL 1
-#define L_COL 2
-
-typedef struct latex_table {
-  int* col_spec;
-  char** entries;
-  char* label;
-  char* caption;
-  int page;
-  int pos;
-  int cols;
-  int rows;
-  int capacity;
-  int id;
-  int printed;
-} Table;
-
-Table* current_table = NULL;
-
-typedef struct latex_table_list {
-  Table** tables;
-  int capacity;
-  int count;
-} TableList;
-
 TableList* new_list() {
   TableList* list = (TableList*)malloc(sizeof(TableList));
   list->tables = (Table**)malloc(sizeof(Table*)*8);
@@ -223,8 +166,6 @@ void add_table(TableList* list, Table* table) {
   }
   list->tables[list->count++] = table;
 }
-
-TableList* table_list = NULL;
 
 Table* new_table(char* position) {
   Table* table = (Table*)malloc(sizeof(Table));
@@ -242,7 +183,6 @@ Table* new_table(char* position) {
     table->pos = H_POS;
   table->cols = 0;
   table->rows = 0;
-  if(table_list == NULL) table_list = new_list();
   add_table(table_list, table);
   table->id = table_list->count;
   table->printed = 0;
@@ -341,13 +281,12 @@ void print_table(Table* table) {
   int i, j, k, len;
   int cols = table->cols;
   int rows = table->rows;
-  char e[rows][cols][32];
+  char e[rows][cols][32]; // ASSUMPTION: entries in table limited to 32 characters
   int max[cols];
   memset(max, 0, sizeof(int)*cols);
 
   for(i = 0; i < rows; i++) { // iterate for each line
     int offset = 0;
-    //fprintf(fpout, "string: %s\n", table->entries[i]);
     for(j = 0; j < cols; j++) {
       int next = substring(table->entries[i]+offset, "&");
       len = (next == -1) ? (strlen(table->entries[i])-offset) : (next);
@@ -355,8 +294,6 @@ void print_table(Table* table) {
       e[i][j][len] = 0;
       if(len > max[j]) max[j] = len;
       offset += next+1;
-      /*fprintf(fpout, "col: %d, next &: %d, offset: %d, max[col]: %d\n",
-        j, next, offset, max[j]);*/
     }
   }
 
@@ -372,43 +309,34 @@ void print_table(Table* table) {
   fprintf(fpout, "\n"); // may need to change to reflect line spacing, could fill a blank space in line and print line
   char buf[64];
   memset(buf, 0, 64);
-  /*for(i = 0; i < table_list->count; i++) {
-    if(strcmp(table_list->tables[i]->label, table->label) == 0)
-      fprintf(fpout, "Table %d.", i+1);
-  }*/
-  sprintf(buf, "Table %d. ", table->id);
   if(table->caption != NULL)
-    strcat(buf, table->caption);
+    sprintf(buf, "Table %d. %s", table->id, table->caption);
   generate_formatted_text(buf);
   print_line();
   table->printed = 1;
 }
 
-typedef struct type_checking_stack {
-  int* data;
-  int count;
-  int capacity;
-} BlockStack;
+int table_lines(Table* table) {
+  return table->rows + (table->caption != NULL) (2) : (0);
+}
 
-BlockStack* new_block_stack() {
-  BlockStack* stack = (BlockStack*)malloc(sizeof(BlockStack));
+Stack* new_stack() {
+  Stack* stack = (Stack*)malloc(sizeof(Stack));
   stack->data = (int*)malloc(sizeof(int)*8);
   stack->capacity = 8;
   stack->count = 0;
   return stack;
 }
 
-BlockStack* stack = NULL;
-
-void push(BlockStack* stack, int n) {
-  if(stack->count = stack->capacity) {
+void push(Stack* stack, int n) {
+  if(stack->count == stack->capacity) {
     stack->capacity *= 2;
     stack->data = (int*)realloc(stack->data, stack->capacity);
   }
   stack->data[stack->count++] = n;
 }
 
-int pop(BlockStack* stack) {
+int pop(Stack* stack) {
   if(stack->count > 0) {
     int n = stack->data[stack->count-1];
     stack->count--;
@@ -417,6 +345,6 @@ int pop(BlockStack* stack) {
   return -1;
 }
 
-int top(BlockStack* stack) {
+int top(Stack* stack) {
   return stack->data[stack->count];
 }

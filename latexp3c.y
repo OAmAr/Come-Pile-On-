@@ -7,40 +7,8 @@
 #define  BUF_SIZE       512
 #define YYDEBUG 1
 
-#define LAlph  1
-#define CAlph  2
-#define LRoman 3
-#define CRoman 4
-#define Arabic 5
-
-#define CENTER_CMD 1
-#define VERBATIM_CMD 2
-#define SINGLE_CMD 3
-#define ITEMIZE_CMD 4
-#define ENUMERATE_CMD 5
-#define TABULAR_CMD 6
-#define TABLE_CMD 7 
-
-int ws_flag = 0;
-int noin_flag = 0;
-int it_flag = 0;
-int line_spacing = 0;
-int single_flag = 0;
-int text_index = 0;
-int tmp_text_index = 0;
-int spec_chars = 0;
-#define INDEX text_index + spec_chars
-int enumerate = 0;
-int enumeration = 1;
-int itemize = 0;
-int item_depth = 0;
-int item_width = 4;
-#define ITEM_SPACING item_depth*item_width
-int table_flag = 0;
-int center_flag = 0;
-int verb_flag = 0;
-
 #include "latexp3c.tab.h"
+#include "project.h"
 #include "util.c"
 #include "generate.c"
 int yyerror(){}
@@ -77,7 +45,7 @@ latexstatement   :  startdoc  mainbody  enddoc { fprintf(fplog,"Complete\n");}
 startdoc         :  LBEGIN  DOCUMENT 
                  {
                     fprintf(fplog, "started doc\n"); 
-                    stack = new_block_stack();
+                    block_stack = new_stack();
                     table_list = new_list();
                  } 
                  ;
@@ -164,7 +132,7 @@ backsoptions     :  beginendopts {print_line();}
      
 beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
                  {
-                    if(pop(stack) != $2) {
+                    if(pop(block_stack) != $2) {
                         fprintf(fpout, "\n\n\nMISMATCHED BEGIN/END BLOCKS\n\n\n");
                         exit(1);
                     }
@@ -211,11 +179,11 @@ begcmds          :  CENTER
 
 endbegin         :  END  endcmds
                  {
-                    push(stack, $2);
+                    push(block_stack, $2);
                  }
                  |  endtableopts  TABLE 
                  {
-                    push(stack, TABLE_CMD);
+                    push(block_stack, TABLE_CMD);
                     print_table(current_table);
                     table_flag = 0;
                  } 
