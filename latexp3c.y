@@ -64,8 +64,8 @@ mainoption       :  textoption
                     {
                       generate_formatted_text($1);
                       tmp_text_index = text_index;
-                      text_index = 0;
-                      print_line();
+                      //text_index = 0;
+                      //print_line();
                     }
                  |  commentoption
                  |  latexoptions
@@ -100,20 +100,20 @@ commentoption    :  SPECCHAR  textoption
 latexoptions     :  backsoptions
                  |  LCURLYB  curlyboptions  RCURLYB
                  {
-                   it_flag = $2;
-                   if(it_flag) {
-                    line[text_index+spec_chars++] = '\e'; 
-                    line[text_index+spec_chars++] = '[';
-                    line[text_index+spec_chars++] = '3';
-                    line[text_index+spec_chars++] = 'm';
-                    line[(text_index++)+spec_chars] = ' ';
-                   } else {
-                    line[text_index+spec_chars++] = '\033'; 
-                    line[text_index+spec_chars++] = '[';
-                    line[text_index+spec_chars++] = '0';
-                    line[text_index+spec_chars++] = 'm';
-                    line[(text_index++)+spec_chars] = ' ';
-                   }
+                    it_flag = $2;
+                    if(it_flag) {
+                        line[text_index+spec_chars++] = '\e'; 
+                        line[text_index+spec_chars++] = '[';
+                        line[text_index+spec_chars++] = '3';
+                        line[text_index+spec_chars++] = 'm';
+                        line[(text_index++)+spec_chars] = ' ';
+                    } else {
+                        line[text_index+spec_chars++] = '\033'; 
+                        line[text_index+spec_chars++] = '[';
+                        line[text_index+spec_chars++] = '0';
+                        line[text_index+spec_chars++] = 'm';
+                        line[(text_index++)+spec_chars] = ' ';
+                    }
                  }
                     
                  ;
@@ -128,7 +128,7 @@ curlyboptions    :  fonts  textoption
                  }
                  ;
 
-backsoptions     :  beginendopts {print_line();}
+backsoptions     :  beginendopts
                  |  sectionoptions {print_line();}
                  |  tableofcont {print_line();}
                  |  linespacing {print_line();}
@@ -142,12 +142,13 @@ backsoptions     :  beginendopts {print_line();}
                     if(text_index > 0) {line[INDEX] = ' '; text_index++;}
                  }
                  |  specialchar
-                 |  nonewpara
+                 |  nonewpara {print_line();}
                  |  reference {print_line();}
                  ;
      
 beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
                  {
+                    print_line();
                     if(pop(block_stack) != $2) {
                         fprintf(fpout, "\n\n\nMISMATCHED BEGIN/END BLOCKS\n\n\n");
                         exit(1);
@@ -157,36 +158,43 @@ beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
 
 begcmds          :  CENTER  
                  {
+                    print_line();
                     center_flag=1;
                     $$ = CENTER_CMD;
                  }
                  |  VERBATIM  
                  {
+                    print_line();
                     ws_flag=1;
                     $$ = VERBATIM_CMD;
                  }
                  |  SINGLE 
                  {
+                    print_line();
                     single_flag = 1;
                     $$ = SINGLE_CMD;
                  } 
                  |  ITEMIZE 
                  {
+                    print_line();
                     push(itemize_stack, ITEMIZE_CMD);
                     $$ = ITEMIZE_CMD;
                  }
                  |  ENUMERATE 
                  {
+                    print_line();
                     push(itemize_stack, ENUMERATE_CMD);
                     push(enumeration_stack, 1);
                     $$ = ENUMERATE_CMD;
                  }
                  |  TABLE  begtableopts
                  {
+                    print_line();
                     $$ = TABLE_CMD;
                  }
                  |  TABULAR  begtabularopts
                  {
+                    print_line();
                     $$ =TABULAR_CMD;
                  }
                  ;
@@ -243,7 +251,11 @@ beginblock       :  beginendopts
                     
                     if (single_flag) { generate_formatted_text($1); print_line();}
 
-                    if (ws_flag)     { fprintf(fpout, "%s", $1); }
+                    if (ws_flag)     { 
+                        char* verb = $1;
+                        //if(*verb == '\n') fprintf(fpout, "AWODIAOWIDJ");
+                        fprintf(fpout, "%s", verb+1); 
+                    }
                  }
                  |  entrylist  /* FOR center and tabular */
                                     {printf("center or tabular\n");}
@@ -404,21 +416,21 @@ horvert          :  VSPACE
 fonts            :  RM
 
                  {
-                  $$=it_flag; 
-                  it_flag = 0; 
-                  line[tmp_text_index+spec_chars++] = '\033'; 
-                  line[tmp_text_index+spec_chars++] = '[';
-                  line[tmp_text_index+spec_chars++] = '0';
-                  line[tmp_text_index+spec_chars++] = 'm';
+                    $$=it_flag; 
+                    it_flag = 0; 
+                    line[tmp_text_index+spec_chars++] = '\033'; 
+                    line[tmp_text_index+spec_chars++] = '[';
+                    line[tmp_text_index+spec_chars++] = '0';
+                    line[tmp_text_index+spec_chars++] = 'm';
                  }
                  |  IT
                  { 
-                  $$=it_flag;
-                  it_flag = 1;
-                  line[tmp_text_index+spec_chars++] = '\e'; 
-                  line[tmp_text_index+spec_chars++] = '[';
-                  line[tmp_text_index+spec_chars++] = '3';
-                  line[tmp_text_index+spec_chars++] = 'm'; 
+                    $$=it_flag;
+                    it_flag = 1;
+                    line[tmp_text_index+spec_chars++] = '\e'; 
+                    line[tmp_text_index+spec_chars++] = '[';
+                    line[tmp_text_index+spec_chars++] = '3';
+                    line[tmp_text_index+spec_chars++] = 'm'; 
                  }
                  ;
 specialchar      :  SPECCHAR  

@@ -84,7 +84,7 @@ void end_doc_cleanup(){
 }
 
 void print_line() {
-  if(strlen(line) == 0)
+  if(INDEX == 0)
     return;
   int temp_line = line_spacing;
   if (single_flag)
