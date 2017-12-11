@@ -1,5 +1,10 @@
 /* THIS IS THE util.c FILE */
 
+void print_blank_line() {
+  fprintf(fpout, "\n");
+  incr_lines_so_far();
+}
+
 void  init_lines_so_far(){
   lines_so_far = 0;
 }
@@ -151,42 +156,32 @@ void right_justify() {
   }
 }
 
-TableList* new_list() {
-  TableList* list = (TableList*)malloc(sizeof(TableList));
-  list->tables = (Table**)malloc(sizeof(Table*)*8);
-  list->capacity = 8;
-  list->count = 0;
-  return list;
-}
-
-void add_table(TableList* list, Table* table) {
-  if(list->count == list->capacity) {
-    list->capacity *= 2;
-    list->tables = (Table**)realloc(list->tables, sizeof(Table*)*list->capacity);
-  }
-  list->tables[list->count++] = table;
-}
-
 Table* new_table(char* position) {
   Table* table = (Table*)malloc(sizeof(Table));
+  table->entries = (char**)malloc(sizeof(char*)*8);
+  if(*position == 'b') table->pos = B_POS;
+  else if(*position == 't') table->pos = T_POS;
+  else table->pos = H_POS;
+  table->id = current_table_id++;
+  sprintf(table->id_str, "Table %d. ", table->id);
+  table->page = get_page_no();
   table->col_spec = NULL;
-  table->capacity = 8;
-  table->entries = (char**)malloc(sizeof(char*)*table->capacity);
   table->label = NULL;
   table->caption = NULL;
-  table->page = get_page_no();
-  if(strcmp(position, "b") == 0)
-    table->pos = B_POS;
-  else if(strcmp(position, "t") == 0)
-    table->pos = T_POS;
-  else
-    table->pos = H_POS;
+  table->capacity = 8;
   table->cols = 0;
   table->rows = 0;
-  add_table(table_list, table);
-  table->id = table_list->count;
-  table->printed = 0;
   return table;
+}
+
+void free_table(Table* table) {
+  if(table->label != NULL) free(table->label);
+  if(table->caption != NULL) free(table->caption);
+  int i;
+  for(i = 0; i < table->rows; i++)
+    free(table->entries[i]);
+  free(table->entries);
+  free(table);
 }
 
 void set_cols(Table* table, char* cols) {
@@ -278,6 +273,7 @@ char* table_justify(char* s, int len, int format, int should_space) {
 }
 
 void print_table(Table* table) {
+  table_flag = 1;
   int i, j, k, len;
   int cols = table->cols;
   int rows = table->rows;
@@ -310,14 +306,15 @@ void print_table(Table* table) {
   char buf[64];
   memset(buf, 0, 64);
   if(table->caption != NULL)
-    sprintf(buf, "Table %d. %s", table->id, table->caption);
+    sprintf(buf, "%s%s", table->id_str, table->caption);
   generate_formatted_text(buf);
   print_line();
-  table->printed = 1;
+  table_flag = 0;
+  free_table(table);
 }
 
 int table_lines(Table* table) {
-  return table->rows + (table->caption != NULL) (2) : (0);
+  return table->rows + ((table->caption != NULL) ? (2+(strlen(table->caption)+strlen(table->id_str))/OUT_WIDTH) : (0));
 }
 
 Stack* new_stack() {
@@ -328,7 +325,7 @@ Stack* new_stack() {
   return stack;
 }
 
-void push(BlockStack* stack, int n) {
+void push(Stack* stack, int n) {
   if(stack->count == stack->capacity) {
     stack->capacity *= 2;
     stack->data = (int*)realloc(stack->data, stack->capacity);
@@ -347,4 +344,33 @@ int pop(Stack* stack) {
 
 int top(Stack* stack) {
   return stack->data[stack->count];
+}
+
+Queue* new_queue() {
+  Queue* queue = (Queue*)malloc(sizeof(Queue));
+  queue->data = (Table**)malloc(sizeof(Table*)*8);
+  queue->capacity = 8;
+  queue->count = 0;
+  queue->front = 0;
+  return queue;
+}
+
+void enqueue(Queue* queue, Table* table) {
+  if(queue->count == queue->capacity) {
+    queue->capacity *= 2;
+    queue->data = (Table**)realloc(queue->data, queue->capacity);
+  }
+  queue->data[(queue->count+queue->front)%queue->capacity] = table;
+  queue->count++;
+}
+
+Table* dequeue(Queue* queue) {
+  if(queue->count == 0) return NULL;
+  Table* table = queue->data[queue->front];
+  queue->front = (queue->front + 1)%queue->capacity;
+  return table;
+}
+
+Table* peek(Queue* queue) {
+  return queue->data[queue->front];
 }

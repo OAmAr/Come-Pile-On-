@@ -20,29 +20,9 @@ void  generate_subsec_header(int i,int j, char *s){
         fprintf(fptoc, "\n%d.%d %s ---------- PAGE %d\n", i, j, s, get_page_no());
 }
 
-int check_print_table(int pos){
-    int i;
-    for (i = 0; i < table_list->count; i++){
-        Table* table = table_list->tables[i];
-        
-        if ((!table->printed) && table->pos == pos){
-            print_table(table);
-            table->printed = 1;
-            return 1;
-        }
-    }
-            fprintf(fplog, "DEBUGTAG, return2:\n");
-    return 0;
-}
-
-
-
 void print_page_number(){
     fprintf(fplog, "DEBUGTAG, IN PRINT PAGE NUMBER ");
-    while(! check_done_page()){
-        fprintf(fpout,"\n");
-        incr_lines_so_far();
-    }
+    while(! check_done_page()) print_blank_line();
     fprintf(fpout, "\n\n");
     for(int i=0; i<20; i++) fprintf(fpout, " ");
     char* page = (char*) malloc(sizeof(char) * 100);
@@ -72,19 +52,35 @@ void print_page_number(){
         sprintf(page, "%d", pn);
 
     fprintf(fpout, "%s\n\n", page);
-    fprintf(fplog, "DEBUGTAG, table not working:on page %s", page);
 
     inc_page_no();
     init_lines_so_far();
 
-    check_print_table(T_POS);
-    
-    return;
+    if(peek(t_queue) != NULL) print_table(dequeue(t_queue));
+}
+
+void print_bottom() {
+  Table* bottom = dequeue(b_queue);
+  while((LINES_PER_PAGE-lines_so_far) > table_lines(bottom)) print_blank_line();
+  print_table(bottom);
+}
+
+void test_bottom() { // checks if there is a bottom and that there is room to print it
+  Table* bottom = peek(b_queue);
+  if((bottom != NULL) && ((LINES_PER_PAGE-lines_so_far) >= table_lines(bottom))) { // if there's room, print the bottom
+    print_bottom();
+  }
 }
 
 void end_doc_cleanup(){
-    while(check_print_table(T_POS) || check_print_table(B_POS));
-    if (!check_done_page()) print_page_number();
+  test_bottom();
+  while(1) {
+    if(peek(b_queue) != NULL || peek(t_queue) != NULL) {
+      print_page_number();
+      test_bottom();
+    } else break;
+  }
+  print_page_number();
 }
 
 void print_line() {

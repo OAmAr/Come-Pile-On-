@@ -1,30 +1,30 @@
 /* ------------- MACROS ------------- */
 
-#define LAlph  			1
-#define CAlph  			2
-#define LRoman 			3
-#define CRoman 			4
-#define Arabic 			5
+#define LAlph  			    1
+#define CAlph  			    2
+#define LRoman 			    3
+#define CRoman 			    4
+#define Arabic 			    5
 
-#define CENTER_CMD 		1
-#define VERBATIM_CMD 	2
-#define SINGLE_CMD 		3
-#define ITEMIZE_CMD 	4
-#define ENUMERATE_CMD 	5
-#define TABULAR_CMD 	6
-#define TABLE_CMD 		7 
+#define CENTER_CMD 		  1
+#define VERBATIM_CMD 	  2
+#define SINGLE_CMD 		  3
+#define ITEMIZE_CMD 	  4
+#define ENUMERATE_CMD   5
+#define TABULAR_CMD 	  6
+#define TABLE_CMD 		  7 
 
 #define OUT_WIDTH       40
 #define SPACE_LEFT      5
 #define LINES_PER_PAGE  40
 #define TOC_ON          1
 
-#define H_POS 			0
-#define	B_POS 			1
-#define	T_POS 			2
-#define R_COL 			0
-#define C_COL 			1
-#define L_COL 			2
+#define H_POS 			    0
+#define	B_POS 			    1
+#define	T_POS 			    2
+#define R_COL 			    0
+#define C_COL 			    1
+#define L_COL 			    2
 
 #define INDEX text_index + spec_chars
 #define ITEM_SPACING item_depth*item_width
@@ -34,20 +34,21 @@ typedef struct latex_table {
   char** entries;
   char* label;
   char* caption;
+  char id_str[20]; // ASSUMPTION: only about 10 digits per table id
   int page;
   int pos;
   int cols;
   int rows;
   int capacity;
   int id;
-  int printed;
 } Table;
 
-typedef struct latex_table_list {
-  Table** tables;
+typedef struct table_queue {
+  Table** data;
   int capacity;
   int count;
-} TableList;
+  int front;
+} Queue;
 
 typedef struct type_checking_stack {
   int* data;
@@ -75,7 +76,8 @@ int   lines_so_far;
 struct  doc_symtab  DST;
 
 Table* current_table = NULL;
-TableList* table_list = NULL;
+Queue* b_queue = NULL;
+Queue* t_queue = NULL;
 Stack* block_stack = NULL;
 
 int ws_flag = 0;
@@ -94,6 +96,7 @@ int item_width = 4;
 int table_flag = 0;
 int center_flag = 0;
 int verb_flag = 0;
+int current_table_id = 1;
 
 
 /* ------------- FUNCTIONS ------------- */
@@ -102,12 +105,15 @@ int verb_flag = 0;
 void init_output_page();
 void  generate_sec_header(int i, char* s);
 void  generate_subsec_header(int i,int j, char *s);
+void print_bottom();
+void try_bottom();
 void print_page_number();
 void vertical_space(char* s);
 void generate_item(char* s);
 void print_line();
 void generate_formatted_text(char* s);
 // util.c
+void print_blank_line();
 void  init_lines_so_far();
 void  incr_lines_so_far();
 int   check_done_page();
@@ -127,9 +133,8 @@ void  set_page_style(int s);
 int substring(char* haystack, char* needle);
 int less_specchars(int length);
 void right_justify();
-TableList* new_list();
-void add_table(TableList* list, Table* table);
 Table* new_table(char* position);
+void free_table(Table* table);
 void set_cols(Table* table, char* cols);
 void set_label(Table* table, char* label);
 void set_caption(Table* table, char* caption);
@@ -142,3 +147,7 @@ Stack* new_stack();
 void push(Stack* stack, int n);
 int pop(Stack* stack);
 int top(Stack* stack);
+Queue* new_queue();
+void enqueue(Queue* queue, Table* table);
+Table* dequeue(Queue* queue);
+Table* peek(Queue* queue);

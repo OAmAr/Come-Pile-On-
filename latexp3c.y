@@ -46,7 +46,8 @@ startdoc         :  LBEGIN  DOCUMENT
                  {
                     fprintf(fplog, "started doc\n"); 
                     block_stack = new_stack();
-                    table_list = new_list();
+                    b_queue = new_queue();
+                    t_queue = new_queue();
                  } 
                  ;
 
@@ -168,7 +169,6 @@ begcmds          :  CENTER
                  }
                  |  TABLE  begtableopts
                  {
-                    //table_flag = 1;
                     $$ = TABLE_CMD;
                  }
                  |  TABULAR  begtabularopts
@@ -184,8 +184,9 @@ endbegin         :  END  endcmds
                  |  endtableopts  TABLE 
                  {
                     push(block_stack, TABLE_CMD);
-                    if (current_table->pos==H_POS) print_table(current_table);
-                    //table_flag = 0;
+                    if (current_table->pos==B_POS) enqueue(b_queue, current_table);
+                    else if(current_table->pos==T_POS) enqueue(t_queue, current_table);
+                    else print_table(current_table);
                  } 
                  ;
 
