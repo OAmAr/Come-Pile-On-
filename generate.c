@@ -73,6 +73,7 @@ void test_bottom() { // checks if there is a bottom and that there is room to pr
 }
 
 void end_doc_cleanup(){
+  print_line();
   test_bottom();
   while(1) {
     if(peek(b_queue) != NULL || peek(t_queue) != NULL) {

@@ -2,7 +2,7 @@
 %{ /* A LEX FOR PART 3 OF THE PROJECT WHERE VERBATIM WORKS */
 %}
 ws		        [ \t\n]+
-punc            (\.|\,|\!|\?|'|`)
+punc            (\.|\,|\!|\?|'|`|\:|\(|\))
 word		    ({punc}|[a-zA-Z0-9])*
 special         (\%|\_|\&|\$|\#)
 cols            (r|l|c)*

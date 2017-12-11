@@ -129,7 +129,7 @@ curlyboptions    :  fonts  textoption
                  ;
 
 backsoptions     :  beginendopts
-                 |  sectionoptions {print_line();}
+                 |  sectionoptions {/*print_line();*/}
                  |  tableofcont {print_line();}
                  |  linespacing {print_line();}
                  |  pagenumbers
@@ -148,7 +148,6 @@ backsoptions     :  beginendopts
      
 beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
                  {
-                    print_line();
                     if(pop(block_stack) != $2) {
                         fprintf(fpout, "\n\n\nMISMATCHED BEGIN/END BLOCKS\n\n\n");
                         exit(1);
@@ -225,6 +224,7 @@ endcmds          :  CENTER
                  }
                  |  SINGLE 
                  {
+                    for(int i = 0; i< line_spacing; i++) print_blank_line();
                     single_flag = 0;
                     $$ = SINGLE_CMD;
                  } 
