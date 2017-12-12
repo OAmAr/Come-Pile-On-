@@ -1,0 +1,14 @@
+\begin{document}
+\pagenumbering{arabic}
+\renewcommand{\baselinestretch}{1}
+\alph{1}
+\tableofcontents     
+\section{Hello, this is section 1}
+\subsection{This is subsection 1.1}
+\section{This is section 2!}
+\subsection{This is subsection 2.1}
+\subsection{And finally, this is subsection 2.2}
+
+%This file tests specifically the section headers
+
+\end{document}

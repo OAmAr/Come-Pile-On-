@@ -1,0 +1,19 @@
+\begin{document}
+\pagenumbering{arabic}
+\renewcommand{\baselinestretch}{1}
+\tableofcontents     
+\section{Baselinestretch is equal to 1!}
+Here is some text, it should be single spaced. Does it look like it is single spaced? I sure hope so.
+\renewcommand{\baselinestretch}{2}
+\section{Baselinestretch is equal to 2!}
+Here is some text, it should be single spaced. Does it look like it is single spaced? I sure hope so.
+\renewcommand{\baselinestretch}{3}
+\section{Baselinestretch is equal to 3!}
+Here is some text, it should be single spaced. Does it look like it is single spaced? I sure hope so.
+\renewcommand{\baselinestretch}{1}
+\section{Baselinestretch is equal to 1!}
+Here is some text, it should be single spaced. Does it look like it is single spaced? I sure hope so.
+
+%This file tests changing linespacing
+
+\end{document}
