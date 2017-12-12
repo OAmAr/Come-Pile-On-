@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#define  BUF_SIZE       512
+#define  BUF_SIZE       1024
 #define YYDEBUG 1
 
 #include "latexp3c.tab.h"
@@ -53,6 +53,7 @@ startdoc         :  LBEGIN  DOCUMENT
                     enumeration_stack = new_stack();
                     b_queue = new_queue();
                     t_queue = new_queue();
+                    memset(line, 0, 128); // start with empty line
                     set_page_no(1);
                  } 
                  ;
@@ -104,21 +105,6 @@ latexoptions     :  backsoptions
                  |  LCURLYB  curlyboptions  RCURLYB
                  {
                     it_flag = $2;
-                    if(it_flag) {
-                        line[text_index+spec_chars++] = '\e'; // this inserts characters which generate italics
-                        line[text_index+spec_chars++] = '[';
-                        line[text_index+spec_chars++] = '3';
-                        line[text_index+spec_chars++] = 'm';
-                        line[text_index+spec_chars] = ' ';
-                        text_index++;
-                    } else {
-                        line[text_index+spec_chars++] = '\033'; // this inserts characters which clear italics
-                        line[text_index+spec_chars++] = '[';
-                        line[text_index+spec_chars++] = '0';
-                        line[text_index+spec_chars++] = 'm';
-                        line[text_index+spec_chars] = ' ';
-                        text_index++;
-                    }
                  }
                     
                  ;
@@ -126,10 +112,6 @@ latexoptions     :  backsoptions
 curlyboptions    :  fonts  textoption
                  {    
                     $$ = $1;
-                    if(text_index > 0) { // Add a space to separate italics/roman text unless at the front of a line
-                        line[INDEX] = ' '; 
-                        text_index++;
-                    }
                     generate_formatted_text($2);
                  }
                  ;
@@ -142,12 +124,6 @@ backsoptions     :  beginendopts
                  |  pagenuminit
                  |  spacing {print_line();}
                  |  fonts
-                 {
-                    if(text_index > 0) {
-                        line[INDEX] = ' '; 
-                        text_index++;
-                    }
-                 }
                  |  specialchar
                  |  nonewpara {print_line();}
                  |  reference {print_line();}
@@ -389,12 +365,14 @@ sectionoptions   :  SECTION  LCURLYB  textoption  RCURLYB
                     print_line(); // need to clear the line buffer
                     generate_sec_header(get_sec_ctr(), $3);
                     incr_sec_ctr();
+                    noin_flag = 1; // new section so don't indent the first line
                  }
                  |  SUBSEC  LCURLYB  textoption  RCURLYB
                  {
                     print_line();
                     generate_subsec_header(get_sec_ctr()-1, get_subsec_ctr(), $3);
                     incr_subsec_ctr();
+                    noin_flag = 1; // new section so don't indent the first line
                  }
                  ;
 
@@ -419,23 +397,23 @@ pagenumbers      :  PAGENUM  style2
 
 style2           :  ARABIC2 
                  {
-                    $$=Arabic;
+                    $$=ARABIC_STYLE;
                  }
                  |  LROMAN2 
                  {
-                    $$=LRoman;
+                    $$=LROMAN_STYLE;
                  }
                  |  CROMAN2 
                  {
-                    $$=CRoman;
+                    $$=CROMAN_STYLE;
                  }
                  |  LALPH2  
                  {
-                    $$=LAlph;
+                    $$=LALPH_STYLE;
                  }
                  |  CALPH2  
                  {
-                    $$=CAlph;
+                    $$=CALPH_STYLE;
                  }
                  ;
 
@@ -448,29 +426,29 @@ pagenuminit      :  style1  LCURLYB  WORD  RCURLYB
 
 style1           :  ARABIC1 
                  {
-                    $$=Arabic;
+                    $$=ARABIC_STYLE;
                  }
                  |  LROMAN1 
                  { 
-                    $$=LRoman;
+                    $$=LROMAN_STYLE;
                  }
                  |  CROMAN1 
                  {  
-                    $$=CRoman;
+                    $$=CROMAN_STYLE;
                  }
                  |  LALPH1  
                  {
-                    $$=LAlph;
+                    $$=LALPH_STYLE;
                  }
                  |  CALPH1  
                  {
-                    $$=CAlph;
+                    $$=CALPH_STYLE;
                  }
                  ;
 
 spacing          :  horvert  LCURLYB  WORD  RCURLYB 
                  { 
-                    if($1 == Vspace) // hspace not required so we didn't add anything for it
+                    if($1 == VSPACE_CMD) // hspace not required so we didn't add anything for it
                         vertical_space($3);
                  }
                  ;
@@ -478,12 +456,12 @@ spacing          :  horvert  LCURLYB  WORD  RCURLYB
 horvert          :  VSPACE
                  {
                     print_line(); // need to clear the line buffer
-                    $$ = Vspace;
+                    $$ = VSPACE_CMD;
                  }  
                  |  HSPACE
                  {
                     print_line();
-                    $$ = Hspace;
+                    $$ = HSPACE_CMD;
                  }
                  ;
 
@@ -491,19 +469,11 @@ fonts            :  RM
                  {
                     $$=it_flag; 
                     it_flag = 0; 
-                    line[text_index+spec_chars++] = '\033'; // same as the curlyb options case -- characters set\remove italics
-                    line[text_index+spec_chars++] = '[';
-                    line[text_index+spec_chars++] = '0';
-                    line[text_index+spec_chars++] = 'm';
                  }
                  |  IT
                  { 
                     $$=it_flag;
                     it_flag = 1;
-                    line[text_index+spec_chars++] = '\e'; 
-                    line[text_index+spec_chars++] = '[';
-                    line[text_index+spec_chars++] = '3';
-                    line[text_index+spec_chars++] = 'm'; 
                  }
                  ;
 
