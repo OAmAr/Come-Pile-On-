@@ -20,6 +20,11 @@ void  generate_subsec_header(int i,int j, char *s){
         fprintf(fptoc, "\n%d.%d %s ---------- PAGE %d\n", i, j, s, get_page_no());
 }
 
+/*
+ * Print page number checks to see if a page is done (if not it prints blank lines until it's done
+ * It converts the page number to the correct style and then prints it
+ */
+
 void print_page_number(){
     while(! check_done_page()) print_blank_line();
     fprintf(fpout, "\n\n");
@@ -83,6 +88,12 @@ void end_doc_cleanup(){
   print_page_number();
 }
 
+/*
+ * Correctly spaces/centers a line as necessary
+ * Also, checks to see if the page is done and prints the page number
+ * Sets the page number/line number accordingly
+ */
+
 void print_line() {
   if(INDEX == 0)
     return;
@@ -117,7 +128,9 @@ void print_line() {
     print_page_number();
   line_spacing = temp_line;
 }
-
+/*
+ * Prints int s newlines
+ */
 void vertical_space(char* s) {
   int n = atoi(s); // get int value of input
   int i;
@@ -167,9 +180,9 @@ void generate_formatted_text(char* s){
 }
 
 /*
- *
- *
- *
+ *              This function gets called when we try printing verbatim mode in centered
+ * It breaks the text into strings seperated by newlines, and then centers them based on the longest one
+ *                                  Along the way, it prints each one
  */
 
 
