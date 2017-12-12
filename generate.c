@@ -85,8 +85,13 @@ void end_doc_cleanup(){
 }
 
 void print_line() {
-  if(INDEX == 0)
+  if(is_ws(line)) {
+    text_index = 0;
+    spec_chars = 0;
+    tmp_text_index = 0;
+    memset(line, 0, 128);
     return;
+  }
   int temp_line = line_spacing;
   if (single_flag)
     line_spacing = 0;

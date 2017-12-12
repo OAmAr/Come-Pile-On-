@@ -64,8 +64,6 @@ mainoption       :  textoption
                     {
                       generate_formatted_text($1);
                       tmp_text_index = text_index;
-                      //text_index = 0;
-                      //print_line();
                     }
                  |  commentoption
                  |  latexoptions
@@ -75,7 +73,6 @@ textoption       :  textoption  wsorword
                     {
                       if (!ws_flag) strcat($$, " ");
                       strcat($$, $2);
-                      
                     }
                  |  wsorword
                     {
@@ -106,13 +103,16 @@ latexoptions     :  backsoptions
                         line[text_index+spec_chars++] = '[';
                         line[text_index+spec_chars++] = '3';
                         line[text_index+spec_chars++] = 'm';
-                        line[(text_index++)+spec_chars] = ' ';
+                        //line[text_index+spec_chars] = ' ';
+                        //text_index++;
                     } else {
                         line[text_index+spec_chars++] = '\033'; 
                         line[text_index+spec_chars++] = '[';
                         line[text_index+spec_chars++] = '0';
                         line[text_index+spec_chars++] = 'm';
-                        line[(text_index++)+spec_chars] = ' ';
+                        line[text_index+spec_chars] = ' ';
+                        //fprintf(fpout, "[%c]", line[text_index+spec_chars]);
+                        //text_index++;
                     }
                  }
                     
@@ -348,13 +348,15 @@ labelrest        :  LABEL  LCURLYB  WORD  RCURLYB  END
 
 sectionoptions   :  SECTION  LCURLYB  textoption  RCURLYB
                     {
-                      generate_sec_header(get_sec_ctr(), $3);
-                      incr_sec_ctr();
+                        //print_line();
+                        generate_sec_header(get_sec_ctr(), $3);
+                        incr_sec_ctr();
                     }
                  |  SUBSEC  LCURLYB  textoption  RCURLYB
                     {
-                      generate_subsec_header(get_sec_ctr()-1, get_subsec_ctr(), $3);
-                      incr_subsec_ctr();
+                        //print_line();
+                        generate_subsec_header(get_sec_ctr()-1, get_subsec_ctr(), $3);
+                        incr_subsec_ctr();
                     }
                  ;
 

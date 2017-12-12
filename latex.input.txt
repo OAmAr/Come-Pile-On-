@@ -13,7 +13,6 @@ generated.
 When the blank line occurs after a section, no indentation of the paragraph
 is performed.  However, all other blanks, would result in a five space 
 indent of the paragraph.
-
 \subsection{A Text Processor}
 
 A text processor is a very useful tool, since it allows us to

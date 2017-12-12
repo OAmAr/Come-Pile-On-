@@ -5,6 +5,15 @@ void print_blank_line() {
   incr_lines_so_far();
 }
 
+int is_ws(char* s) {
+  int i;
+  int slen = strlen(s);
+  for(i = 0; i < slen; i++)
+    if(s[i] != ' ' && s[i] != '\n' && s[i] != '\t')
+      return 0;
+  return 1;
+}
+
 void  init_lines_so_far(){
   lines_so_far = 0;
 }

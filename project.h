@@ -118,6 +118,7 @@ void print_line();
 void generate_formatted_text(char* s);
 // util.c
 void print_blank_line();
+int is_ws(char* s);
 void  init_lines_so_far();
 void  incr_lines_so_far();
 int   check_done_page();
