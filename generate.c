@@ -24,25 +24,25 @@ char* translate_page_no(int n, int style) { // this translates page # n into the
   char* page = (char*)malloc(sizeof(char)*100); // ASSUMPTION: a page number will be printable in 100 chars regardless of style
   char* p=page; // used for computation
   switch (style) {
-    case LRoman: // lower case roman
+    case LROMAN_STYLE: // lower case roman
       convertToRoman(n, page); // get the page number as a string of roman numerals
       for ( ; *p; ++p) *p = tolower(*p); // convert all the chars to lower case
       break;
-    case CRoman:
+    case CROMAN_STYLE:
       convertToRoman(n, page); // get the page number as a string of roman numerals
       for ( ; *p; ++p) *p = toupper(*p); // convert all the chars to upper case
       break;
-    case LAlph: // lower case alphabetical
+    case LALPH_STYLE: // lower case alphabetical
       sprintf(page, "%c", 'a'+n-1); // use the ascii value of a as the starting point and add the page number - 1 (page 1 should be a)
       break;
-    case CAlph:
+    case CALPH_STYLE:
       sprintf(page, "%c", 'A'+n-1); // use the ascii value of A as the starting point and add the page number - 1 (page 1 should be A)
       break;
-    default: // Arabic
+    default: // ARABIC_STYLE
       sprintf(page, "%d", n); // just print the number
       break;
   }
-  if ((style == LAlph || style == CAlph) && n > 26 ) // alph only works up to 26 pages, so just print as an arabic number if it's greater
+  if ((style == LALPH_STYLE || style == CALPH_STYLE) && n > 26 ) // alph only works up to 26 pages, so just print as an arabic number if it's greater
     sprintf(page, "%d", n);
   return page; // Don't forget to free!
 }
@@ -146,10 +146,12 @@ void generate_formatted_text(char* s){ // generates string s as text
   int slen = strlen(s);
   int i, j, k, r;
 
-  i = 0;
-  while(!table_flag && (s[i] == '\n'|| s[i]==' ')) // skip any leading newlines and spaces which will have the effect of not indenting the first paragraph of a section
-    i+=1;
-  for (; i < slen;){
+  if(last_it_flag != it_flag) {
+    if(it_flag) set_italics();
+    else clear_italics();
+  }
+
+  for (i=0; i < slen;){
     int flag = 1; // a flag to indicate that the line still needs printing
     for (j = INDEX; ((text_index < (OUT_WIDTH - ITEM_SPACING)) && (i < slen)); i++, j++, text_index++) { // Start j at the current index of the line and iterate until the number of characters given by text index fills the line (item spacing for itemization, so need to treat that like a tab of sorts)
       line[j] = s[i];
@@ -172,13 +174,14 @@ void generate_formatted_text(char* s){ // generates string s as text
         for (;s[i] == ' '; i++); // skip any blank spaces so the next line does not begin with them
 
         line[j] = '\0';
-        while(line[j-1]=='\n' || line[j-1] == ' ') line[j--] = '\0'; // I also forgot why this is important :(
+        while(line[j+spec_chars-1]=='\n' || line[j+spec_chars-1] == ' ') line[(j--)+spec_chars] = '\0'; // I also forgot why this is important :(
         if (!center_flag) // only right justify if the text is not supposed to be centered, verbatim text does not get sent to this function ever so not an issue
             right_justify();
         print_line();  // print the line
       }
     }
   }
+  last_it_flag = it_flag;
 }
 
 /*
@@ -233,7 +236,7 @@ int find_length_longest_line(char *s){
 
 void generate_item(char* s) { // Generates an item
   char* itemize_strs[3] = {"-", "~", ">"}; // ASSUMPTION: only up to a depth of 3 itemize/enumerate blocks nested together
-  int enumeration_strs[3] = {Arabic, CRoman, LRoman}; // ?
+  int enumeration_strs[3] = {ARABIC_STYLE, CROMAN_STYLE, LROMAN_STYLE}; // styles of enumerations
   print_line(); // print out a line if it's already in there, probably a better way to do this but shouldn't do any harm
   if(top(itemize_stack) == ENUMERATE_CMD) { // Add the enumeration to the beginning of the line
     int top = pop(enumeration_stack); // get the enumeration value

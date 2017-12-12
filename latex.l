@@ -59,7 +59,7 @@ cols            (r|l|c)*
 {ws}			    {printf("ws--%s--ws\n", yytext); 
                     if ((strcmp(yytext, "\n\n") == 0) && (ws_flag == 0)){
                         if(!noin_flag)
-                            strcpy(yylval.trans, "\n    "); 
+                            strcpy(yylval.trans, "\n     "); // 5 space indent
                         else
                             strcpy(yylval.trans, "\n");  
                         noin_flag=0;

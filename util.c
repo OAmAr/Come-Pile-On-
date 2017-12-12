@@ -104,6 +104,30 @@ void  set_page_style(int s){
   DST.page_style = s;
 }
 
+void set_italics() { // Sets characters which print italics
+  line[INDEX] = '\e'; // these characters print italics in the terminal
+  line[INDEX] = '[';
+  line[INDEX] = '3';
+  line[INDEX] = 'm'; 
+  if(text_index > 0) { // if there is meaningful text, print a space to separate words
+    line[INDEX] = ' '; 
+    text_index++;
+  }
+  spec_chars += 4;
+}
+
+void clear_italics() { // Sets characters which clear italics
+  line[INDEX] = '\033'; // these characters clear italics in the terminal
+  line[INDEX] = '[';
+  line[INDEX] = '0';
+  line[INDEX] = 'm';
+  if(text_index > 0) { // if there is meaningful text, print a space to separate words
+    line[INDEX] = ' '; 
+    text_index++;
+  }
+  spec_chars += 4;
+}
+
 int substring(char* haystack, char* needle) { // returns the offset of the first substring of needle in haystack, taken from my 3100 lab :)
   if(strcmp(haystack, needle) == 0) // code doesn't work if the strings have equal length, so return 0 as there is no offset for equal strings
     return 0;
@@ -124,23 +148,17 @@ int substring(char* haystack, char* needle) { // returns the offset of the first
   return -1; // not a substring
 }
 
-int less_specchars(int length) { // returns length less characters used for italics and whatnot
-  int i = 0;
-  while((i = substring(line+i, "\033[0m")) != -1) { // keep searching for substrings of italics chars
-    i++; // increment i to search for next substring
-    length -= 4; // each set is 4 chars so decrement the length by 4
-  }
-  i = 0;
-  while((i = substring(line+i, "\e[3m")) != -1) { // do the same with these (which are the start italics chars)
-    i++;
-    length -= 4;
-  }
-  return length;
+int next_char(char* s, int offset) { // returns the next non-space character after offset bytes into s, or strlen(s)+1 if none left in s 
+  int len = strlen(s);
+  int i;
+  for(int i = offset; i < len; i++)
+    if(s[i] != ' ') return i;
+  return i;
 }
 
 void right_justify() { // right justifies a single line
   int length = strlen(line); // get total length of whole string, italics characters included
-  int llen = less_specchars(length); // get length of meaningful characters
+  int llen = length - spec_chars; // get length of meaningful text
   int i, j, just, n = 0, found_character = 0;
   if (length < 1) // nothing to justify
       return;
@@ -160,7 +178,7 @@ void right_justify() { // right justifies a single line
         }
         llen++;
         length++;
-        just++; // skip the next space
+        just = next_char(line, just); // find the next non-space character
       }
     }
   }
@@ -244,7 +262,7 @@ void add_entry(Table* table, char* entry) { // adds an entry to the table
 }
 
 char* table_justify(char* s, int len, int format, int should_space) { // justifies a cell in a table, len is the max length of the cell (justification spaces included)
-  char* buf = (char*)malloc(len+1+item_width); // allocate space for the result
+  char* buf = (char*)malloc(len+1+ITEM_WIDTH); // allocate space for the result
   int slen = strlen(s); // get length of string to justify
   int index = 0;
   int i;
@@ -275,9 +293,9 @@ char* table_justify(char* s, int len, int format, int should_space) { // justifi
     strncpy(buf, s, slen); // just copy the entry into the buffer
 
   if(should_space) { // this is necessary as we don't want to add spaces after the last column
-    for(i = 0; i < item_width; i++) // otherwise, just add in spaces to separate the columns
+    for(i = 0; i < ITEM_WIDTH; i++) // otherwise, just add in spaces to separate the columns
       buf[len+i] = ' ';
-    buf[len+item_width] = 0;
+    buf[len+ITEM_WIDTH] = 0;
   } else 
     buf[len] = 0;
   return buf;
