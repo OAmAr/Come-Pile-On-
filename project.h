@@ -107,6 +107,7 @@ int current_table_id = 1;
 /* ------------- FUNCTIONS ------------- */
 
 // generate.c
+char* translate_page_no(int n, int style);
 void init_output_page();
 void generate_sec_header(int i, char* s);
 void generate_subsec_header(int i,int j, char *s);
