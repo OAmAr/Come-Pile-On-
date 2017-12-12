@@ -69,33 +69,32 @@ mainbody         :  mainbody  mainoption
                  ;
 
 mainoption       :  textoption
-                    {
-                      generate_formatted_text($1);
-                      tmp_text_index = text_index; // used in case a \it or \rm command interrupts a line
-                    }
+                 {
+                    generate_formatted_text($1);
+                 }
                  |  commentoption
                  |  latexoptions
                  ;
 
 textoption       :  textoption  wsorword
-                    {
-                      if (!ws_flag) strcat($$, " "); // add a single space only if not verbatim
-                      strcat($$, $2);
-                    }
+                 {
+                    if (!ws_flag) strcat($$, " "); // add a single space only if not verbatim
+                    strcat($$, $2);
+                 }
                  |  wsorword
-                    {
-                      strcpy($$, $1);
-                    }
+                 {
+                    strcpy($$, $1);
+                 }
                  ;
 
 wsorword         :  WS 
-                    {
-                      strcpy($$, $1);
-                    }
+                 {
+                    strcpy($$, $1);
+                 }
                  |  WORD
-                    {
-                      strcpy($$, $1);
-                    }
+                 {
+                    strcpy($$, $1);
+                 }
                  ;
 
 commentoption    :  SPECCHAR  textoption
@@ -127,8 +126,6 @@ latexoptions     :  backsoptions
 curlyboptions    :  fonts  textoption
                  {    
                     $$ = $1;
-                    text_index = tmp_text_index; // store a tmp text index to deal with interrupted textoptions
-                    tmp_text_index = 0;
                     if(text_index > 0) { // Add a space to separate italics/roman text unless at the front of a line
                         line[INDEX] = ' '; 
                         text_index++;
@@ -146,8 +143,6 @@ backsoptions     :  beginendopts
                  |  spacing {print_line();}
                  |  fonts
                  {
-                    text_index = tmp_text_index; // same reasoning for this as the block in curlyboptions
-                    tmp_text_index = 0;
                     if(text_index > 0) {
                         line[INDEX] = ' '; 
                         text_index++;
@@ -265,25 +260,36 @@ beginblock       :  beginendopts
                  {  
                     printf("single or verb\n");
                     if (ws_flag)     { 
-                        char* verb = $1+1;
-                        if (center_flag)
+                        char* verb = $1+1; // the first line of verbatim is always a \n so skip it
+                        if (center_flag) // centered verbatim text is special
                             center_verb_text(verb);
-                        else
+                        else // otherwise just dump out the text as is
                             fprintf(fpout, "%s", verb); 
                     }
-                    else if (single_flag) { generate_formatted_text($1); print_line();}
+                    else if (single_flag) { 
+                        generate_formatted_text($1); 
+                        print_line();
+                    }
 
                  }
                  |  entrylist  /* FOR center and tabular */
-                                    {printf("center or tabular\n");}
+                 {
+                    printf("center or tabular\n");
+                 }
                  |  listblock  /* FOR item and enumerate */
-                                    {printf("item or enumerate\n");}
+                 {
+                    printf("item or enumerate\n");
+                 }
                  ;
 
 listblock        :  listblock  anitem
-                                    {printf("listblockA\n");}
+                 {
+                    printf("listblockA\n");
+                 }
                  |  anitem
-                                    {printf("listblockB\n");}
+                 {
+                    printf("listblockB\n");
+                 }
                  ;
 
 anitem           :  ITEM  textoption
@@ -294,15 +300,19 @@ anitem           :  ITEM  textoption
                  ;
 
 entrylist        :  entrylist  anentry
-                                    {printf("entrylistA\n");}
+                 {
+                    printf("entrylistA\n");
+                 }
                  |  anentry
-                                    {printf("entrylistB\n");}
+                 {
+                    printf("entrylistB\n");
+                 }
                  ;
 
 anentry          :  entry  DBLBS
                  {
                     printf("anentryA\n");
-                    if(table_flag) add_entry(current_table, $1);
+                    if(table_flag) add_entry(current_table, $1); // take priority over tables
                     else if (center_flag) {
                         generate_formatted_text($1);
                         print_line();
@@ -310,13 +320,15 @@ anentry          :  entry  DBLBS
                  }
 
                  |  beginendopts
-                                    {printf("anentryB\n");}
+                 {
+                    printf("anentryB\n");
+                 }
                  ;
 
 entry            :  entry  SPECCHAR  textoption
                  {
                     printf("entryA\n");
-                    strcpy($$, $1);
+                    strcpy($$, $1); // this is a table entry so just concatenate everything together to separate by &
                     strcat($$, "&");
                     strcat($$, $3);
                  }
@@ -329,26 +341,35 @@ entry            :  entry  SPECCHAR  textoption
 
 begtableopts     :  LSQRB  position  RSQRB
                  {
-                    current_table = new_table($2);
-                    table_flag = 1;
+                    current_table = new_table($2); // start of a new table
+                    table_flag = 1; // raise the table flag
                  }
                  ;
                  
 begtabularopts   :  LCURLYB  COLS  RCURLYB
                  {
-                    set_cols(current_table, $2);
+                    set_cols(current_table, $2); // set the column spec of the table according to COLS
                  }
                  ;
 
-position         :  H {strcpy($$, $1);}  
-                 |  T {strcpy($$, $1);}
-                 |  B {strcpy($$, $1);}
+position         :  H 
+                 {
+                    strcpy($$, $1);
+                 }  
+                 |  T 
+                 {
+                    strcpy($$, $1);
+                 }
+                 |  B 
+                 {
+                    strcpy($$, $1);
+                 }
                  ;
 
 endtableopts     :  END
                  |  CAPTION  LCURLYB  textoption  RCURLYB  captionrest
                  {
-                    set_caption(current_table, $3);
+                    set_caption(current_table, $3); // set the caption of the table
                  }
                  |  labelrest 
                  ;
@@ -359,72 +380,104 @@ captionrest      :  END
 
 labelrest        :  LABEL  LCURLYB  WORD  RCURLYB  END
                  {
-                    set_label(current_table, $3);
+                    set_label(current_table, $3); // set the label of the table for \ref
                  }
                  ;
 
 sectionoptions   :  SECTION  LCURLYB  textoption  RCURLYB
-                    {
-                        print_line();
-                        generate_sec_header(get_sec_ctr(), $3);
-                        incr_sec_ctr();
-                    }
+                 {
+                    print_line(); // need to clear the line buffer
+                    generate_sec_header(get_sec_ctr(), $3);
+                    incr_sec_ctr();
+                 }
                  |  SUBSEC  LCURLYB  textoption  RCURLYB
-                    {
-                        print_line();
-                        generate_subsec_header(get_sec_ctr()-1, get_subsec_ctr(), $3);
-                        incr_subsec_ctr();
-                    }
+                 {
+                    print_line();
+                    generate_subsec_header(get_sec_ctr()-1, get_subsec_ctr(), $3);
+                    incr_subsec_ctr();
+                 }
                  ;
 
 tableofcont      :  TABOCON
-                    {
-                      set_gen_toc();
-                    }
+                 {
+                    set_gen_toc();
+                 }
                  ;
 
 linespacing      :  RENEW  LCURLYB  BASELINES  RCURLYB
                             LCURLYB  WORD  RCURLYB
-                    {line_spacing=atoi($6)-1;} 
+                 {
+                    line_spacing=atoi($6)-1;
+                 } 
                  ;
 
 pagenumbers      :  PAGENUM  style2
-                    {
-                      set_page_style($2);
-                    }
+                 {
+                    set_page_style($2);
+                 }
                  ;
 
-style2           :  ARABIC2 {$$=Arabic;}
-                 |  LROMAN2 {$$=LRoman;}
-                 |  CROMAN2 {$$=CRoman;}
-                 |  LALPH2  {$$=LAlph;}
-                 |  CALPH2  {$$=CAlph;}
+style2           :  ARABIC2 
+                 {
+                    $$=Arabic;
+                 }
+                 |  LROMAN2 
+                 {
+                    $$=LRoman;
+                 }
+                 |  CROMAN2 
+                 {
+                    $$=CRoman;
+                 }
+                 |  LALPH2  
+                 {
+                    $$=LAlph;
+                 }
+                 |  CALPH2  
+                 {
+                    $$=CAlph;
+                 }
                  ;
 
 pagenuminit      :  style1  LCURLYB  WORD  RCURLYB
-                    {
-                      set_page_no(atoi($3));
-                      set_page_style($1);
-                    }
+                 {
+                    set_page_no(atoi($3));
+                    set_page_style($1);
+                 }
                  ;
 
-style1           :  ARABIC1 {$$=Arabic;}
-                 |  LROMAN1 {$$=LRoman;}
-                 |  CROMAN1 {$$=CRoman;}
-                 |  LALPH1  {$$=LAlph;}
-                 |  CALPH1  {$$=CAlph;}
+style1           :  ARABIC1 
+                 {
+                    $$=Arabic;
+                 }
+                 |  LROMAN1 
+                 { 
+                    $$=LRoman;
+                 }
+                 |  CROMAN1 
+                 {  
+                    $$=CRoman;
+                 }
+                 |  LALPH1  
+                 {
+                    $$=LAlph;
+                 }
+                 |  CALPH1  
+                 {
+                    $$=CAlph;
+                 }
                  ;
 
 spacing          :  horvert  LCURLYB  WORD  RCURLYB 
                  { 
-                    if($1 == Vspace)
+                    if($1 == Vspace) // hspace not required so we didn't add anything for it
                         vertical_space($3);
                  }
                  ;
 
 horvert          :  VSPACE
                  {
-                    print_line();
+                    print_line(); // need to clear the line buffer
                     $$ = Vspace;
                  }  
                  |  HSPACE
@@ -435,32 +488,34 @@ horvert          :  VSPACE
                  ;
 
 fonts            :  RM
-
                  {
                     $$=it_flag; 
                     it_flag = 0; 
-                    line[tmp_text_index+spec_chars++] = '\033'; 
-                    line[tmp_text_index+spec_chars++] = '[';
-                    line[tmp_text_index+spec_chars++] = '0';
-                    line[tmp_text_index+spec_chars++] = 'm';
+                    line[text_index+spec_chars++] = '\033'; // same as the curlyb options case -- characters set\remove italics
+                    line[text_index+spec_chars++] = '[';
+                    line[text_index+spec_chars++] = '0';
+                    line[text_index+spec_chars++] = 'm';
                  }
                  |  IT
                  { 
                     $$=it_flag;
                     it_flag = 1;
-                    line[tmp_text_index+spec_chars++] = '\e'; 
-                    line[tmp_text_index+spec_chars++] = '[';
-                    line[tmp_text_index+spec_chars++] = '3';
-                    line[tmp_text_index+spec_chars++] = 'm'; 
+                    line[text_index+spec_chars++] = '\e'; 
+                    line[text_index+spec_chars++] = '[';
+                    line[text_index+spec_chars++] = '3';
+                    line[text_index+spec_chars++] = 'm'; 
                  }
                  ;
+
 specialchar      :  SPECCHAR  
                  |  LCURLYB  
                  |  RCURLYB
                  ;
 
 nonewpara        :  NOINDENT
-                 {noin_flag = 1;}
+                 {
+                    noin_flag = 1;
+                 }
                  ;
 
 reference        :  REF  LCURLYB  WORD  RCURLYB

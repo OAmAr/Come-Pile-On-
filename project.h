@@ -93,7 +93,6 @@ int it_flag = 0;
 int line_spacing = 0;
 int single_flag = 0;
 int text_index = 0;
-int tmp_text_index = 0;
 int spec_chars = 0;
 int enumerate = 0;
 int itemize = 0;
@@ -107,6 +106,7 @@ int current_table_id = 1;
 /* ------------- FUNCTIONS ------------- */
 
 // generate.c
+char* translate_page_no(int n, int style);
 void init_output_page();
 void generate_sec_header(int i, char* s);
 void generate_subsec_header(int i,int j, char *s);
