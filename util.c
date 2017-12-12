@@ -1,14 +1,14 @@
 /* THIS IS THE util.c FILE */
 
-void print_blank_line() {
+void print_blank_line() { // prints a blank line & increments line count
   fprintf(fpout, "\n");
   incr_lines_so_far();
 }
 
-int is_ws(char* s) {
+int is_ws(char* s) { // tells if a string is white space
   int i;
   int slen = strlen(s);
-  for(i = 0; i < slen; i++)
+  for(i = 0; i < slen; i++) // iterate through string and check for ws
     if(s[i] != ' ' && s[i] != '\n' && s[i] != '\t')
       return 0;
   return 1;
@@ -103,58 +103,58 @@ void  set_page_style(int s){
   DST.page_style = s;
 }
 
-int substring(char* haystack, char* needle) {
-  if(strcmp(haystack, needle) == 0)
+int substring(char* haystack, char* needle) { // returns the offset of the first substring of needle in haystack, taken from my 3100 lab :)
+  if(strcmp(haystack, needle) == 0) // code doesn't work if the strings have equal length, so return 0 as there is no offset for equal strings
     return 0;
-  int lenh = strlen(haystack);
+  int lenh = strlen(haystack); // get length of strings
   int lenn = strlen(needle);
   int i, j;
-  for(i = 0; i < lenh - lenn; i++) {
+  for(i = 0; i < lenh - lenn; i++) { // iterate until the difference of lengths as past that there can be no substrings
     if(*(haystack+i) == *needle) { // matched 1st character
-      int bad = 0;
-      for(j = 1; j < lenn; j++) {
-        if(*(haystack+i+j) != *(needle+j))
+      int bad = 0; // init flag
+      for(j = 1; j < lenn; j++) { // iterate through needle to check if it is a substring
+        if(*(haystack+i+j) != *(needle+j)) // if any chars don't match set the flag to indicate not a substring
           bad = 1;
       }
-      if(!bad)
+      if(!bad) // it was a substring, i is the offset of the beginning
         return i;
     }
   }
-  return -1;
+  return -1; // not a substring
 }
 
 int less_specchars(int length) { // returns length less characters used for italics and whatnot
   int i = 0;
-  while((i = substring(line+i, "\033[0m")) != -1) {
+  while((i = substring(line+i, "\033[0m")) != -1) { // keep searching for substrings of italics chars
     i++; // increment i to search for next substring
-    length -= 4;
+    length -= 4; // each set is 4 chars so decrement the length by 4
   }
   i = 0;
-  while((i = substring(line+i, "\e[3m")) != -1) {
+  while((i = substring(line+i, "\e[3m")) != -1) { // do the same with these (which are the start italics chars)
     i++;
     length -= 4;
   }
   return length;
 }
 
-void right_justify() {
-  int length = strlen(line);
-  int llen = less_specchars(length);
+void right_justify() { // right justifies a single line
+  int length = strlen(line); // get total length of whole string, italics characters included
+  int llen = less_specchars(length); // get length of meaningful characters
   int i, j, just, n = 0, found_character = 0;
-  if (length < 1)
+  if (length < 1) // nothing to justify
       return;
-  for(i = 0; i < length; i++) {
-    if(line[i] != ' ' && !found_character)
+  for(i = 0; i < length; i++) { // iterate through the string to find the first space separating two words
+    if(line[i] != ' ' && !found_character) // found a non-space character
       found_character = 1;
-    if(line[i] == ' ' && found_character){
+    if(line[i] == ' ' && found_character){ // this is the first space after a non-space character
       n = i;
       break;
     }
   }
-  while(llen < OUT_WIDTH-ITEM_SPACING) { // Right justify by going through line and adding spaces until it's good
-    for(just = n; just < length && llen < OUT_WIDTH-ITEM_SPACING; just++) {
-      if(line[just] == ' ')  {
-        for(j = length; j > just; j--) {
+  while(llen < OUT_WIDTH-ITEM_SPACING) { // Right justify by going through line and adding spaces until it's filled out enough space
+    for(just = n; just < length && llen < OUT_WIDTH-ITEM_SPACING; just++) { // start at the first space, end at the end of the string or at the proper outwidth (less space for itemize items)
+      if(line[just] == ' ')  { // found a space
+        for(j = length; j > just; j--) { // shift everything one to the right in order to "add" a space
           line[j] = line[j-1];
         }
         llen++;
@@ -165,117 +165,116 @@ void right_justify() {
   }
 }
 
-Table* new_table(char* position) {
-  Table* table = (Table*)malloc(sizeof(Table));
-  table->entries = (char**)malloc(sizeof(char*)*8);
-  if(*position == 'b') table->pos = B_POS;
+Table* new_table(char* position) { // creates a new table object
+  Table* table = (Table*)malloc(sizeof(Table)); // allocate the table
+  table->entries = (char**)malloc(sizeof(char*)*8); // allocate the entries (an entry is the text for a row)
+  if(*position == 'b') table->pos = B_POS; // set the position according the the position given, since it is only 1 char we can just use that
   else if(*position == 't') table->pos = T_POS;
   else table->pos = H_POS;
-  table->id = current_table_id++;
-  sprintf(table->id_str, "Table %d. ", table->id);
-  table->page = get_page_no();
-  table->col_spec = NULL;
-  table->label = NULL;
+  table->id = current_table_id++; // store the id of the table and increment the id var for the next table
+  sprintf(table->id_str, "Table %d. ", table->id); // store the string representation of the id
+  table->page = get_page_no(); // get the page number of the table's definition, though this is not necessary as we don't use it
+  table->col_spec = NULL; // col spec gives details on the columns of the table, init to null
+  table->label = NULL; // init label and caption to null
   table->caption = NULL;
-  table->capacity = 8;
-  table->cols = 0;
-  table->rows = 0;
-  table->centered = center_flag;
-  if (center_flag) fprintf(fplog, "affffffff:centeringline: \n%s\n",line);
+  table->capacity = 8; // initial capacity is 8
+  table->cols = 0; // no columns yet
+  table->rows = 0; // no rows yet
+  table->centered = center_flag; // store whether the table is contained within a center block for printing later
   return table;
 }
 
-void free_table(Table* table) {
+void free_table(Table* table) { // free's a table, fairly straightforward
   if(table->label != NULL) free(table->label);
   if(table->caption != NULL) free(table->caption);
   int i;
-  for(i = 0; i < table->rows; i++)
+  for(i = 0; i < table->rows; i++) // free each entry in the table
     free(table->entries[i]);
   free(table->entries);
   free(table);
 }
 
-void set_cols(Table* table, char* cols) {
-  table->cols = strlen(cols);
-  table-> col_spec = (int*)malloc(sizeof(int)*table->cols);
+void set_cols(Table* table, char* cols) { // sets the column spec according to the content of the begin tabular statement (e.x. pass something like "rcl")
+  table->cols = strlen(cols); // this is the # of columns
+  table->col_spec = (int*)malloc(sizeof(int)*table->cols); // allocate the col spec
   int i;
-  for(i = 0; i < table->cols; i++) {
+  for(i = 0; i < table->cols; i++) { // for each column, set the col spec according to the character
     if(cols[i] == 'r') table->col_spec[i] = R_COL;
     else if(cols[i] == 'c') table->col_spec[i] = C_COL;
     else table->col_spec[i] = L_COL;
   }
 }
 
-void set_label(Table* table, char* label) {
-  table->label = (char*)malloc(strlen(label));
+void set_label(Table* table, char* label) { // sets the label of the table (for \ref)
+  table->label = (char*)malloc(strlen(label)); // allocate space and copy the parameter into the table
   strcpy(table->label, label);
 }
 
-void set_caption(Table* table, char* caption) {
-  table->caption = (char*)malloc(strlen(caption));
+void set_caption(Table* table, char* caption) { // sets the caption of the table
+  table->caption = (char*)malloc(strlen(caption)); // allocate space and copy the parameter into the table
   strcpy(table->caption, caption);
 }
 
-void check_entry(Table* table, char* entry) {
+void check_entry(Table* table, char* entry) { // check if a table entry is valid
   int i = 0;
-  int count = 0;
+  int count = 0; // count the 3 of &'s'
   while(1) { // get # of &'s
-    int next = substring(entry+i, "&");
-    if(next < 0) break;
-    i += next + 1;
-    count++;
+    int next = substring(entry+i, "&"); // find the next &
+    if(next < 0) break; // no more & in the entry
+    i += next + 1; // increment i to get to the next &
+    count++; // increment the count as we found an &
   }
   if(count != table->cols-1) { // check that count matches the number of cols-1
     fprintf(fpout, "\n\n\nError compiling table %d:\nColumn count of entry '%s' does not match table spec (cols = %d)\n\n\n",
       table->id, entry, table->cols);
-    exit(1);
+    exit(1); // stop compiling as the entry is invalid
   }
 }
 
-void add_entry(Table* table, char* entry) {
-  check_entry(table, entry);
-  if(table->rows == table->capacity) {
+void add_entry(Table* table, char* entry) { // adds an entry to the table
+  check_entry(table, entry); // check that the entry is valid
+  if(table->rows == table->capacity) { // if there is no more room in the table reallocate it
     table->capacity *= 2;
     table->entries = (char**)realloc(table->entries, sizeof(char*)*table->capacity);
   }
-  table->entries[table->rows] = (char*)malloc(strlen(entry));
+  table->entries[table->rows] = (char*)malloc(strlen(entry)); // allocate space for the entry and copy it in
   strcpy(table->entries[table->rows], entry);
-  table->rows++;
+  table->rows++; // increment the row count as this entry represents a new row
 }
 
-char* table_justify(char* s, int len, int format, int should_space) {
-  char* buf = (char*)malloc(len+1+item_width);
-  int slen = strlen(s);
+char* table_justify(char* s, int len, int format, int should_space) { // justifies a cell in a table, len is the max length of the cell (justification spaces included)
+  char* buf = (char*)malloc(len+1+item_width); // allocate space for the result
+  int slen = strlen(s); // get length of string to justify
   int index = 0;
   int i;
-  if(slen < len) {
-    switch(format) {
-      case R_COL:
-        for(i = 0; i < len-slen; i++)
+  if(slen < len) { // only need to justify if there are spaces to add in
+    switch(format) { // each format is handled differently
+      case R_COL: // right justify
+        for(i = 0; i < len-slen; i++) // add in spaces at the beginning
           buf[i] = ' ';
-        strncpy(buf+i, s, slen);
+        strncpy(buf+i, s, slen); // copy the entry at the end
         break;
-      case C_COL:
-        for(i = 0; i < (len-slen)/2; i++)
+      case C_COL: // center
+        for(i = 0; i < (len-slen)/2; i++) // add in half the spaces in the beginning
           buf[index++] = ' ';
-        strncpy(buf+index, s, slen);
-        index += slen;
-        for(i = (len-slen)/2; i < len-slen; i++) {
+        strncpy(buf+index, s, slen); // copy the entry
+        index += slen; // increment the index so we know where to start adding the next stuff
+        for(i = (len-slen)/2; i < len-slen; i++) { // add the rest of the spaces after the entry
           buf[index] = ' ';
           index++;
         }
         break;
-      case L_COL:
-        strncpy(buf, s, slen);
-        for(i = slen; i < len-slen; i++)
+      case L_COL: // left justify
+        strncpy(buf, s, slen); // copy the entry into the beginning
+        for(i = slen; i < len-slen; i++) // 
           line[i] = ' ';
         break;
     }
-  } else 
-    strncpy(buf, s, slen);
+  } else // the length of the string matches the desired length of the entry so no justification is needed
+    strncpy(buf, s, slen); // just copy the entry into the buffer
 
-  if(should_space) {
-    for(i = 0; i < item_width; i++)
+  if(should_space) { // this is necessary as we don't want to add spaces after the last column
+    for(i = 0; i < item_width; i++) // otherwise, just add in spaces to separate the columns
       buf[len+i] = ' ';
     buf[len+item_width] = 0;
   } else 
@@ -283,56 +282,57 @@ char* table_justify(char* s, int len, int format, int should_space) {
   return buf;
 }
 
-void print_table(Table* table) {
-  int tmp_flag = table_flag;
-  int tmp_center = center_flag;
-  center_flag = table->centered;
-  table_flag = 1;
-  int i, j, k, len;
+void print_table(Table* table) { // prints a table (easier said than done)
+  int tmp_flag = table_flag; // store the table_flag global into a tmp var
+  int tmp_center = center_flag; // store the center_flag into a tmp var
+  center_flag = table->centered; // set the center flag according to the value in the table
+  table_flag = 1; // set the table flag to 1 (important as it might not be a 1 if not was not printed in place)
+  int i, j, k, len; // control variables
   int cols = table->cols;
   int rows = table->rows;
-  char e[rows][cols][32]; // ASSUMPTION: entries in table limited to 32 characters
-  int max[cols];
-  memset(max, 0, sizeof(int)*cols);
+  char e[rows][cols][32]; // ASSUMPTION: entries in table limited to 32 characters, don't really want to deal with it otherwise :/
+  int max[cols]; // an array that contains the max length for each column, used for justification
+  memset(max, -1, sizeof(int)*cols);
 
-  for(i = 0; i < rows; i++) { // iterate for each line
+  for(i = 0; i < rows; i++) { // iterate through each row
     int offset = 0;
-    for(j = 0; j < cols; j++) {
-      int next = substring(table->entries[i]+offset, "&");
-      len = (next == -1) ? (strlen(table->entries[i])-offset) : (next);
-      strncpy(e[i][j], table->entries[i]+offset, len);
-      e[i][j][len] = 0;
-      if(len > max[j]) max[j] = len;
-      offset += next+1;
+    for(j = 0; j < cols; j++) { // extract each column
+      int next = substring(table->entries[i]+offset, "&"); // find the next & (col separator)
+      len = (next == -1) ? (strlen(table->entries[i])-offset) : (next); // get the length of the string based on the substring offset, if next is -1 then get the length based off the length of the string cause it's the last column
+      strncpy(e[i][j], table->entries[i]+offset, len); // copy the extracted entry into the entries matrix
+      e[i][j][len] = 0; // terminate the entry in the matrix
+      if(len > max[j]) max[j] = len; // update the max array if appropriate
+      offset += next+1; // set the offset to after the & so we can find the next one
     }
   }
 
-  for(i = 0; i < rows; i++) {
+  for(i = 0; i < rows; i++) { // iterate through the matrix and print each entry
     for(j = 0; j < cols; j++) {
-      char* buffer = table_justify(e[i][j], max[j], table->col_spec[j], j != cols-1);
-      generate_formatted_text(buffer);
-      free(buffer);
+      char* buffer = table_justify(e[i][j], max[j], table->col_spec[j], j != cols-1); // justify the entry
+      generate_formatted_text(buffer); // generate the entry as text
+      free(buffer); // free the buffer
     }
-    print_line();
+    print_line(); // print the row
   }
 
   fprintf(fpout, "\n"); // may need to change to reflect line spacing, could fill a blank space in line and print line
-  char buf[64];
+  char buf[64]; // ASSUMPTION: table # + caption can't be more than 64 chars
   memset(buf, 0, 64);
-  if(table->caption != NULL)
+  if(table->caption != NULL) // print out the table#+caption if a caption exists
     sprintf(buf, "%s%s", table->id_str, table->caption);
-  generate_formatted_text(buf);
-  print_line();
-  table_flag = tmp_flag;
+  generate_formatted_text(buf); // generate the text for the caption
+  print_line(); // print the caption
+  if(table->caption != NULL) print_blank_line(); // print a blank line to make space after the caption
+  table_flag = tmp_flag; // reset table_flag and center_flag
   center_flag = tmp_center;
-  free_table(table);
+  free_table(table); // table no longer needed so free it
 }
 
-int table_lines(Table* table) {
-  return table->rows + ((table->caption != NULL) ? (2+(strlen(table->caption)+strlen(table->id_str))/OUT_WIDTH) : (0));
+int table_lines(Table* table) { // returns the # of lines a table will take up, assumed that a row will be a single line cause of time constraints but in theory it could be changed
+  return table->rows + ((table->caption != NULL) ? (3+(strlen(table->caption)+strlen(table->id_str))/OUT_WIDTH) : (0));
 }
 
-Stack* new_stack() {
+Stack* new_stack() { // creates a new int stack, standard
   Stack* stack = (Stack*)malloc(sizeof(Stack));
   stack->data = (int*)malloc(sizeof(int)*8);
   stack->capacity = 8;
@@ -340,7 +340,7 @@ Stack* new_stack() {
   return stack;
 }
 
-void push(Stack* stack, int n) {
+void push(Stack* stack, int n) { // pushes an int onto the stack
   if(stack->count == stack->capacity) {
     stack->capacity *= 2;
     stack->data = (int*)realloc(stack->data, stack->capacity);
@@ -348,7 +348,7 @@ void push(Stack* stack, int n) {
   stack->data[stack->count++] = n;
 }
 
-int pop(Stack* stack) {
+int pop(Stack* stack) { // removes the top item from the stack
   if(stack->count > 0) {
     int n = stack->data[stack->count-1];
     stack->count--;
@@ -357,11 +357,11 @@ int pop(Stack* stack) {
   return -1;
 }
 
-int top(Stack* stack) {
+int top(Stack* stack) { // looks at the top element of the stack
   return stack->data[stack->count-1];
 }
 
-Queue* new_queue() {
+Queue* new_queue() { // creates a new Table* queue, fairly standard
   Queue* queue = (Queue*)malloc(sizeof(Queue));
   queue->data = (Table**)malloc(sizeof(Table*)*8);
   queue->capacity = 8;
@@ -370,7 +370,7 @@ Queue* new_queue() {
   return queue;
 }
 
-void enqueue(Queue* queue, Table* table) {
+void enqueue(Queue* queue, Table* table) { // enqueue's a table
   if(queue->count == queue->capacity) {
     queue->capacity *= 2;
     queue->data = (Table**)realloc(queue->data, queue->capacity);
@@ -379,13 +379,13 @@ void enqueue(Queue* queue, Table* table) {
   queue->count++;
 }
 
-Table* dequeue(Queue* queue) {
+Table* dequeue(Queue* queue) { // dequeue's a table
   if(queue->count == 0) return NULL;
   Table* table = queue->data[queue->front];
   queue->front = (queue->front + 1)%queue->capacity;
   return table;
 }
 
-Table* peek(Queue* queue) {
+Table* peek(Queue* queue) { // looks at the front of the queue
   return queue->data[queue->front];
 }

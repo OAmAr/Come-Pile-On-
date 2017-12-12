@@ -39,13 +39,16 @@ int yylex();
 %type <val> style2 ARABIC2 LROMAN2 CROMAN2 LALPH2 CALPH2 curlyboptions fonts style1 begcmds endcmds horvert VSPACE HSPACE
 
 %%
-latexstatement   :  startdoc  mainbody  enddoc { fprintf(fplog,"Complete\n");}
+latexstatement   :  startdoc  mainbody  enddoc 
+                 { 
+                    fprintf(fplog,"Complete\n");
+                 }
                  ;
 
 startdoc         :  LBEGIN  DOCUMENT 
                  {
                     fprintf(fplog, "started doc\n"); 
-                    block_stack = new_stack();
+                    block_stack = new_stack(); // init data structs
                     itemize_stack = new_stack();
                     enumeration_stack = new_stack();
                     b_queue = new_queue();
@@ -53,7 +56,11 @@ startdoc         :  LBEGIN  DOCUMENT
                  } 
                  ;
 
-enddoc           :  END  DOCUMENT  {fprintf(fplog, "finished doc\n"); end_doc_cleanup();} 
+enddoc           :  END  DOCUMENT  
+                 {
+                    fprintf(fplog, "finished doc\n"); 
+                    end_doc_cleanup();
+                 } 
                  ;
 
 mainbody         :  mainbody  mainoption
@@ -63,7 +70,7 @@ mainbody         :  mainbody  mainoption
 mainoption       :  textoption
                     {
                       generate_formatted_text($1);
-                      tmp_text_index = text_index;
+                      tmp_text_index = text_index; // used in case a \it or \rm command interrupts a line
                     }
                  |  commentoption
                  |  latexoptions
@@ -71,13 +78,12 @@ mainoption       :  textoption
 
 textoption       :  textoption  wsorword
                     {
-                      if (!ws_flag) strcat($$, " ");
+                      if (!ws_flag) strcat($$, " "); // add a single space only if not verbatim
                       strcat($$, $2);
                     }
                  |  wsorword
                     {
                       strcpy($$, $1);
-                      
                     }
                  ;
 
@@ -99,20 +105,19 @@ latexoptions     :  backsoptions
                  {
                     it_flag = $2;
                     if(it_flag) {
-                        line[text_index+spec_chars++] = '\e'; 
+                        line[text_index+spec_chars++] = '\e'; // this inserts characters which generate italics
                         line[text_index+spec_chars++] = '[';
                         line[text_index+spec_chars++] = '3';
                         line[text_index+spec_chars++] = 'm';
-                        //line[text_index+spec_chars] = ' ';
-                        //text_index++;
+                        line[text_index+spec_chars] = ' ';
+                        text_index++;
                     } else {
-                        line[text_index+spec_chars++] = '\033'; 
+                        line[text_index+spec_chars++] = '\033'; // this inserts characters which clear italics
                         line[text_index+spec_chars++] = '[';
                         line[text_index+spec_chars++] = '0';
                         line[text_index+spec_chars++] = 'm';
                         line[text_index+spec_chars] = ' ';
-                        //fprintf(fpout, "[%c]", line[text_index+spec_chars]);
-                        //text_index++;
+                        text_index++;
                     }
                  }
                     
@@ -121,15 +126,18 @@ latexoptions     :  backsoptions
 curlyboptions    :  fonts  textoption
                  {    
                     $$ = $1;
-                    text_index = tmp_text_index;
+                    text_index = tmp_text_index; // store a tmp text index to deal with interrupted textoptions
                     tmp_text_index = 0;
-                    if(text_index > 0) {line[INDEX] = ' '; text_index++;}
+                    if(text_index > 0) { // Add a space to separate italics/roman text unless at the front of a line
+                        line[INDEX] = ' '; 
+                        text_index++;
+                    }
                     generate_formatted_text($2);
                  }
                  ;
 
 backsoptions     :  beginendopts
-                 |  sectionoptions {/*print_line();*/}
+                 |  sectionoptions
                  |  tableofcont {print_line();}
                  |  linespacing {print_line();}
                  |  pagenumbers
@@ -137,9 +145,12 @@ backsoptions     :  beginendopts
                  |  spacing {print_line();}
                  |  fonts
                  {
-                    text_index = tmp_text_index;
+                    text_index = tmp_text_index; // same reasoning for this as the block in curlyboptions
                     tmp_text_index = 0;
-                    if(text_index > 0) {line[INDEX] = ' '; text_index++;}
+                    if(text_index > 0) {
+                        line[INDEX] = ' '; 
+                        text_index++;
+                    }
                  }
                  |  specialchar
                  |  nonewpara {print_line();}
@@ -148,7 +159,7 @@ backsoptions     :  beginendopts
      
 beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
                  {
-                    if(pop(block_stack) != $2) {
+                    if(pop(block_stack) != $2) { // the top of the stack (the end) should match the value of the begin command, otherwise throw error and exit
                         fprintf(fpout, "\n\n\nMISMATCHED BEGIN/END BLOCKS\n\n\n");
                         exit(1);
                     }
@@ -157,11 +168,11 @@ beginendopts     :  LBEGIN  begcmds  beginblock  endbegin
 
 begcmds          :  CENTER  
                  {
-                    print_line();
-                    center_flag=1;
-                    $$ = CENTER_CMD;
-                    fprintf(fplog, "We've got a centea\n");
-                    if(table_flag) current_table->centered = center_flag;
+                    print_line(); // want to print line before all these begin commands to clear the line buffer
+                    center_flag=1; // raise the appropriate flag for each command
+                    $$ = CENTER_CMD; // set return value of each command
+                    fprintf(fplog, "We've got a center\n");
+                    if(table_flag) current_table->centered = center_flag; // set the center flag of the table if we are working on a table
                  }
                  |  VERBATIM  
                  {
@@ -178,14 +189,14 @@ begcmds          :  CENTER
                  |  ITEMIZE 
                  {
                     print_line();
-                    push(itemize_stack, ITEMIZE_CMD);
+                    push(itemize_stack, ITEMIZE_CMD); // push an itemize onto the itemize stack to increase the depth
                     $$ = ITEMIZE_CMD;
                  }
                  |  ENUMERATE 
                  {
                     print_line();
-                    push(itemize_stack, ENUMERATE_CMD);
-                    push(enumeration_stack, 1);
+                    push(itemize_stack, ENUMERATE_CMD); // push an enumerate onto the itemize stack
+                    push(enumeration_stack, 1); // push a 1 onto the enumeration stack to start counting from 1 at this depth
                     $$ = ENUMERATE_CMD;
                  }
                  |  TABLE  begtableopts
@@ -204,15 +215,15 @@ begcmds          :  CENTER
 
 endbegin         :  END  endcmds
                  {
-                    push(block_stack, $2);
+                    push(block_stack, $2); // push the value of the command onto the block stack
                  }
                  |  endtableopts  TABLE 
                  {
-                    push(block_stack, TABLE_CMD);
-                    if (current_table->pos==B_POS) enqueue(b_queue, current_table);
-                    else if(current_table->pos==T_POS) enqueue(t_queue, current_table);
-                    else print_table(current_table);
-                    table_flag = 0;
+                    push(block_stack, TABLE_CMD); // push the value onto the command stack
+                    if (current_table->pos==B_POS) enqueue(b_queue, current_table); // if it's a b table add it to the b queue
+                    else if(current_table->pos==T_POS) enqueue(t_queue, current_table); // do the same for t tables
+                    else print_table(current_table); // print in place if it's an h table
+                    table_flag = 0; // lower the table flag as the table has finished setting up
                  } 
                  ;
 
@@ -228,19 +239,19 @@ endcmds          :  CENTER
                  }
                  |  SINGLE 
                  {
-                    for(int i = 0; i< line_spacing; i++) print_blank_line();
+                    for(int i = 0; i< line_spacing; i++) print_blank_line(); // print blank lines at the end of the block to realign with document spacing
                     single_flag = 0;
                     $$ = SINGLE_CMD;
                  } 
                  |  ITEMIZE 
                  {
-                    pop(itemize_stack);
+                    pop(itemize_stack); // pop the itemize stack to reduce the depth
                     $$ = ITEMIZE_CMD;
                  } 
                  |  ENUMERATE
                  {
-                    pop(itemize_stack);
-                    pop(enumeration_stack);
+                    pop(itemize_stack); // pop the itemize stack to reduce the depth
+                    pop(enumeration_stack); // pop the enumeration stack to discard the count for that depth
                     $$ = ENUMERATE_CMD;
                  } 
                  |  TABULAR
@@ -253,7 +264,10 @@ beginblock       :  beginendopts
                  {  
                     printf("single or verb\n");
                     
-                    if (single_flag) { generate_formatted_text($1); print_line();}
+                    if (single_flag) { 
+                        generate_formatted_text($1); 
+                        print_line();
+                    }
 
                     if (ws_flag)     { 
                         char* verb = $1;
@@ -353,13 +367,13 @@ labelrest        :  LABEL  LCURLYB  WORD  RCURLYB  END
 
 sectionoptions   :  SECTION  LCURLYB  textoption  RCURLYB
                     {
-                        //print_line();
+                        print_line();
                         generate_sec_header(get_sec_ctr(), $3);
                         incr_sec_ctr();
                     }
                  |  SUBSEC  LCURLYB  textoption  RCURLYB
                     {
-                        //print_line();
+                        print_line();
                         generate_subsec_header(get_sec_ctr()-1, get_subsec_ctr(), $3);
                         incr_subsec_ctr();
                     }
@@ -412,10 +426,12 @@ spacing          :  horvert  LCURLYB  WORD  RCURLYB
 
 horvert          :  VSPACE
                  {
+                    print_line();
                     $$ = Vspace;
                  }  
                  |  HSPACE
                  {
+                    print_line();
                     $$ = Hspace;
                  }
                  ;

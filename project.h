@@ -38,7 +38,7 @@ typedef struct latex_table {
   char** entries;
   char* label;
   char* caption;
-  char id_str[20]; // ASSUMPTION: only about 10 digits per table id
+  char id_str[20]; // ASSUMPTION: only about 10 digits per table id (should be less limiting than the int used to store the table id actually)
   int page;
   int pos;
   int cols;
@@ -80,12 +80,12 @@ char  line[128];
 int   lines_so_far;
 struct  doc_symtab  DST;
 
-Table* current_table = NULL;
-Queue* b_queue = NULL;
-Queue* t_queue = NULL;
-Stack* block_stack = NULL;
-Stack* itemize_stack = NULL;
-Stack* enumeration_stack = NULL;
+Table* current_table = NULL; // used when processing a new table
+Queue* b_queue = NULL; // a queue of tables with position = b
+Queue* t_queue = NULL; // a queue of tables with position = t
+Stack* block_stack = NULL; // a stack for begin/end blocks
+Stack* itemize_stack = NULL; // a stack to keep track of itemize/enumeration blocks
+Stack* enumeration_stack = NULL; // a stack to keep track of the enumerations for nested enumeration blocks
 
 int ws_flag = 0;
 int noin_flag = 0;
@@ -97,7 +97,7 @@ int tmp_text_index = 0;
 int spec_chars = 0;
 int enumerate = 0;
 int itemize = 0;
-int item_width = 4;
+int item_width = 4; // items have 4 spaces preceeding them
 int table_flag = 0;
 int center_flag = 0;
 int verb_flag = 0;
