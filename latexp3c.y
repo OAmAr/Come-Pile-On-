@@ -54,6 +54,7 @@ startdoc         :  LBEGIN  DOCUMENT
                     b_queue = new_queue();
                     t_queue = new_queue();
                     memset(line, 0, 128); // start with empty line
+                    set_page_no(1);
                  } 
                  ;
 
@@ -104,8 +105,6 @@ latexoptions     :  backsoptions
                  |  LCURLYB  curlyboptions  RCURLYB
                  {
                     it_flag = $2;
-                    //if(it_flag) set_italics();
-                    //else clear_italics();
                  }
                     
                  ;
