@@ -139,7 +139,7 @@ int     inc_page_no();
 int     get_page_style();
 void    set_page_style(int s);
 int     substring(char* haystack, char* needle);
-int     next_char(char* s, int offset)
+int     next_char(char* s, int offset);
 void    right_justify();
 Table*  new_table(char* position);
 void    free_table(Table* table);
