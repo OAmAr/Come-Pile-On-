@@ -160,6 +160,8 @@ begcmds          :  CENTER
                     print_line();
                     center_flag=1;
                     $$ = CENTER_CMD;
+                    fprintf(fplog, "We've got a centea\n");
+                    if(table_flag) current_table->centered = center_flag;
                  }
                  |  VERBATIM  
                  {
@@ -189,11 +191,13 @@ begcmds          :  CENTER
                  |  TABLE  begtableopts
                  {
                     print_line();
+                    fprintf(fplog, "We've got a table\n");
                     $$ = TABLE_CMD;
                  }
                  |  TABULAR  begtabularopts
                  {
                     print_line();
+                    fprintf(fplog, "We've got a tabular\n");
                     $$ =TABULAR_CMD;
                  }
                  ;
@@ -254,6 +258,7 @@ beginblock       :  beginendopts
                     if (ws_flag)     { 
                         char* verb = $1;
                         //if(*verb == '\n') fprintf(fpout, "AWODIAOWIDJ");
+                        //print_verb_text($1+1);
                         fprintf(fpout, "%s", verb+1); 
                     }
                  }
