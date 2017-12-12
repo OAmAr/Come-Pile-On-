@@ -93,7 +93,6 @@ int it_flag = 0;
 int line_spacing = 0;
 int single_flag = 0;
 int text_index = 0;
-int tmp_text_index = 0;
 int spec_chars = 0;
 int enumerate = 0;
 int itemize = 0;

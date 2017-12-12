@@ -99,7 +99,6 @@ void print_line() { // prints the line buffer
   if(is_ws(line)) { // We never need to print a line filled with only space in this function the way we have everything, so just reset the line info and exit the function
     text_index = 0;
     spec_chars = 0;
-    tmp_text_index = 0;
     memset(line, 0, 128);
     return;
   }
@@ -125,7 +124,6 @@ void print_line() { // prints the line buffer
 
   text_index = 0; // reset the line
   spec_chars = 0;
-  tmp_text_index = 0;
   memset(line, 0, 128);
 
   for (int x = 0; x <=line_spacing; x++) // increment the lines so far according to the line and line spacing

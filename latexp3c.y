@@ -70,7 +70,6 @@ mainbody         :  mainbody  mainoption
 mainoption       :  textoption
                  {
                     generate_formatted_text($1);
-                    tmp_text_index = text_index; // used in case a \it or \rm command interrupts a line
                  }
                  |  commentoption
                  |  latexoptions
@@ -126,8 +125,6 @@ latexoptions     :  backsoptions
 curlyboptions    :  fonts  textoption
                  {    
                     $$ = $1;
-                    text_index = tmp_text_index; // store a tmp text index to deal with interrupted textoptions
-                    tmp_text_index = 0;
                     if(text_index > 0) { // Add a space to separate italics/roman text unless at the front of a line
                         line[INDEX] = ' '; 
                         text_index++;
@@ -145,8 +142,6 @@ backsoptions     :  beginendopts
                  |  spacing {print_line();}
                  |  fonts
                  {
-                    text_index = tmp_text_index; // same reasoning for this as the block in curlyboptions
-                    tmp_text_index = 0;
                     if(text_index > 0) {
                         line[INDEX] = ' '; 
                         text_index++;
@@ -495,19 +490,19 @@ fonts            :  RM
                  {
                     $$=it_flag; 
                     it_flag = 0; 
-                    line[tmp_text_index+spec_chars++] = '\033'; // same as the curlyb options case -- characters set\remove italics
-                    line[tmp_text_index+spec_chars++] = '[';
-                    line[tmp_text_index+spec_chars++] = '0';
-                    line[tmp_text_index+spec_chars++] = 'm';
+                    line[text_index+spec_chars++] = '\033'; // same as the curlyb options case -- characters set\remove italics
+                    line[text_index+spec_chars++] = '[';
+                    line[text_index+spec_chars++] = '0';
+                    line[text_index+spec_chars++] = 'm';
                  }
                  |  IT
                  { 
                     $$=it_flag;
                     it_flag = 1;
-                    line[tmp_text_index+spec_chars++] = '\e'; 
-                    line[tmp_text_index+spec_chars++] = '[';
-                    line[tmp_text_index+spec_chars++] = '3';
-                    line[tmp_text_index+spec_chars++] = 'm'; 
+                    line[text_index+spec_chars++] = '\e'; 
+                    line[text_index+spec_chars++] = '[';
+                    line[text_index+spec_chars++] = '3';
+                    line[text_index+spec_chars++] = 'm'; 
                  }
                  ;
 
