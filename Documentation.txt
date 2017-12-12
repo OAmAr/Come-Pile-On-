@@ -1,0 +1,56 @@
+\begin{document}
+\pagenumbering{arabic} 
+\arabic{1} 
+\renewcommand{\baselinestretch}{1}
+
+\section{(Sub)Section and TOC}
+
+\section{Line Spacing}
+
+\section{Page Numbering}
+
+\section{Vertical Spacing}
+
+This section was fairly straightforward. If we see the vertical spacing command we
+simply print out the N new lines (where N is the number specified).
+
+See the function vertical_space for details.
+
+\section{Italics\Roman Fonts}
+
+This section proved to be much more difficult than we expected. The first challenge
+was to figure out how to print out italicized text. We discovered a sequence of
+escape characters that controlled this in the Linux terminal so we decided to use that
+as the indication of italics text. A word processor should easily be able to do the same
+as the Linux terminal in this regard.
+
+\subsection{Setting flags}
+
+When we see an italics or roman slash command, we set the it_flag global variable 
+appropriately (we then use this variable when formatting text). This works nicely
+for the simple slash command, but this does not allow slash commands in curly braces
+to reset the font type at the end. Thus, we pass the value of the it_flag through $$ before
+we change it. This allows the curlyb options section to reset it once it has formatted the
+text.
+
+\subsection{Formatting the text}
+
+In generate_formatted_text, before filling the line at all we check whether or not the 
+escape characters should be printed. This happens if the current it_flag value does not
+match the value from the last time generate_formatted_text was called. The reason this works is because the slash commands interrupt the text options so each time there is a 
+font changing command generate_formatted_text will get called at some point before the next 
+time the font is changed again.
+
+If the it_flag value does not match the previous value, we copy the proper escape character
+sequence into the current position of the line buffer by calling functions set_italics and 
+clear_italics.
+
+\subsection{Handling the line buffer}
+The issue with this approach is our line buffer will be filled with characters that do not
+actually get printed (other than to signal to switch to and from italics). To manage this,
+we had to expand the line to be larger and keep track of the significant character count
+of the line. We called this count text_index. We also keep track of the character count
+of the escape characters, called spec_chars. This is useful when we right justify the line
+as we don't want to include the escape characters.
+
+\end{document}
