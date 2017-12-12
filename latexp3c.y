@@ -53,6 +53,7 @@ startdoc         :  LBEGIN  DOCUMENT
                     enumeration_stack = new_stack();
                     b_queue = new_queue();
                     t_queue = new_queue();
+                    set_page_no(1);
                  } 
                  ;
 
