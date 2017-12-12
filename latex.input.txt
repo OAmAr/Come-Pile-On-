@@ -91,7 +91,7 @@ Do greatest at in learning steepest. Breakfast extremity suffering one who all o
 Was drawing natural fat respect husband. An as noisy an offer drawn blush place. These tried for way joy wrote witty. In mr began music weeks after at begin. Education no dejection so direction pretended household do to. Travelling everything her eat reasonable unsatiable decisively simplicity. Morning request be lasting it fortune demands highest of. 
 \end{verbatim}
 
-Increasing impression interested expression he my at. Respect invited request charmed me warrant to. Expect no pretty as do though so genius afraid cousin. Girl when of ye snug poor draw. Mistake totally of in chiefly. Justice visitor him entered for. Continue delicate as unlocked entirely mr relation diverted in. Known not end fully being style house. An whom down kept lain name so at easy. 
+{\it Increasing} impression interested expression he my at. Respect invited request charmed me warrant to. Expect no pretty as do though so genius afraid cousin. Girl when of ye snug poor draw. Mistake totally of in chiefly. Justice visitor him entered for. Continue delicate as unlocked entirely mr relation diverted in. Known not end fully being style house. An whom down kept lain name so at easy. 
 
 \begin{table}[b]
 \begin{center}
@@ -105,10 +105,10 @@ TwoTwo & ZZ & CCCC\\
 \label{heythere}
 \end{table}
 
-{\it Sportsman} do offending supported extremity breakfast by listed by touching each others spoons 
 \begin{center}
 \begin{verbatim}
 Sportsman do offending supported extremity breakfast by listed by touching each others spoons 
+cool this should be centered now
 \end{verbatim}
 \end{center}
 \end{document}

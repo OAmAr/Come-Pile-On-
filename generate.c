@@ -20,6 +20,11 @@ void  generate_subsec_header(int i,int j, char *s){
         fprintf(fptoc, "\n%d.%d %s ---------- PAGE %d\n", i, j, s, get_page_no());
 }
 
+/*
+ * Print page number checks to see if a page is done (if not it prints blank lines until it's done
+ * It converts the page number to the correct style and then prints it
+ */
+
 void print_page_number(){
     while(! check_done_page()) print_blank_line();
     fprintf(fpout, "\n\n");
@@ -83,6 +88,12 @@ void end_doc_cleanup(){
   print_page_number();
 }
 
+/*
+ * Correctly spaces/centers a line as necessary
+ * Also, checks to see if the page is done and prints the page number
+ * Sets the page number/line number accordingly
+ */
+
 void print_line() {
   if(is_ws(line)) {
     text_index = 0;
@@ -96,12 +107,9 @@ void print_line() {
     line_spacing = 0;
   char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
 
-  if (table_flag) 
-    fprintf(fplog, "itableline:and center flag %s \n%d\n",line, center_flag);
   if (center_flag){
-    fprintf(fplog, "centeringline: \n%s\n",line);
     int len_of_line = strlen(line);
-    int num_of_space_r = (40-len_of_line) / 2;
+    int num_of_space_r = (OUT_WIDTH-len_of_line) / 2;
     char tmp_line[128];
     for (int z =0; z < num_of_space_r; tmp_line[z++]=' ');
     memcpy(tmp_line+num_of_space_r, line,len_of_line+1); 
@@ -125,7 +133,9 @@ void print_line() {
     print_page_number();
   line_spacing = temp_line;
 }
-
+/*
+ * Prints int s newlines
+ */
 void vertical_space(char* s) {
   int n = atoi(s); // get int value of input
   int i;
@@ -174,12 +184,54 @@ void generate_formatted_text(char* s){
   }
 }
 
-void print_verb_text(char *s){
+/*
+ *              This function gets called when we try printing verbatim mode in centered
+ * It breaks the text into strings seperated by newlines, and then centers them based on the longest one
+ *                                  Along the way, it prints each one
+ */
+
+
+void center_verb_text(char *s){
+    int center = find_length_longest_line(s);
     int slen = strlen(s);
-    int i, j, k, r;
-    i = 0;
+    char tmp_line[slen];
+    int cur = 0;
 
+    bzero(tmp_line, slen);
 
+    fprintf(fplog, "longest line is: %d", center);
+    for(int i=0; i < slen; i++){
+        tmp_line[cur++] = s[i];
+        if (s[i] == '\n'){
+            char tmp_line2[slen*2];
+            bzero(tmp_line2, slen*2);
+            tmp_line[cur] = '\0';
+            int num_of_space_r = (center-cur) / 2;
+            fprintf(fplog, "Number of spaces is: %d", num_of_space_r);
+            for (int z = 0; z<num_of_space_r; tmp_line2[z++]=' ');
+            memcpy(tmp_line2+num_of_space_r, tmp_line, cur+1);
+            fprintf(fpout, "%s", tmp_line2);
+
+            cur = 0;
+            bzero(tmp_line, slen);
+        }
+    }
+
+}
+int find_length_longest_line(char *s){
+    int slen = strlen(s);
+    int max = 0;
+    int curlen = 0;
+    for(int i = 0; i < slen; i++){
+        if(s[i]=='\n'){
+            if(curlen > max)
+                max = curlen;
+            curlen = 0;
+        }
+        else
+            curlen++;
+    }
+    return max;
 }
 
 
