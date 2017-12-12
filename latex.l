@@ -64,6 +64,6 @@ cols            (r|l|c)*
                             strcpy(yylval.trans, "\n");  
                         noin_flag=0;
                         return(WS); }
-                   else if (ws_flag == 1) { strcpy(yylval.trans, yytext); fprintf(fplog,"this is broken-%s-!= -%s-\n", yytext, yylval.trans); return(WS);}}
+                   else if (ws_flag == 1) { strcpy(yylval.trans, yytext); return(WS);}}
 
 %%

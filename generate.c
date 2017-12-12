@@ -21,7 +21,6 @@ void  generate_subsec_header(int i,int j, char *s){
 }
 
 void print_page_number(){
-    fprintf(fplog, "DEBUGTAG, IN PRINT PAGE NUMBER ");
     while(! check_done_page()) print_blank_line();
     fprintf(fpout, "\n\n");
     for(int i=0; i<20; i++) fprintf(fpout, " ");
@@ -92,7 +91,10 @@ void print_line() {
     line_spacing = 0;
   char* spacing[3] = {"\n", "\n\n", "\n\n\n"};
 
+  if (table_flag) 
+    fprintf(fplog, "itableline:and center flag %s \n%d\n",line, center_flag);
   if (center_flag){
+    fprintf(fplog, "centeringline: \n%s\n",line);
     int len_of_line = strlen(line);
     int num_of_space_r = (40-len_of_line) / 2;
     char tmp_line[128];
@@ -166,6 +168,15 @@ void generate_formatted_text(char* s){
     }
   }
 }
+
+void print_verb_text(char *s){
+    int slen = strlen(s);
+    int i, j, k, r;
+    i = 0;
+
+
+}
+
 
 void generate_item(char* s) {
   print_line(); // print out a line if it's already in there, probably a better way to do this but shouldn't do any harm

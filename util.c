@@ -171,6 +171,8 @@ Table* new_table(char* position) {
   table->capacity = 8;
   table->cols = 0;
   table->rows = 0;
+  table->centered = center_flag;
+  if (center_flag) fprintf(fplog, "affffffff:centeringline: \n%s\n",line);
   return table;
 }
 
@@ -274,6 +276,8 @@ char* table_justify(char* s, int len, int format, int should_space) {
 
 void print_table(Table* table) {
   int tmp_flag = table_flag;
+  int tmp_center = center_flag;
+  center_flag = table->centered;
   table_flag = 1;
   int i, j, k, len;
   int cols = table->cols;
@@ -311,6 +315,7 @@ void print_table(Table* table) {
   generate_formatted_text(buf);
   print_line();
   table_flag = tmp_flag;
+  center_flag = tmp_center;
   free_table(table);
 }
 
