@@ -253,14 +253,15 @@ beginblock       :  beginendopts
                  {  
                     printf("single or verb\n");
                     
-                    if (single_flag) { generate_formatted_text($1); print_line();}
-
                     if (ws_flag)     { 
-                        char* verb = $1;
-                        //if(*verb == '\n') fprintf(fpout, "AWODIAOWIDJ");
-                        //print_verb_text($1+1);
-                        fprintf(fpout, "%s", verb+1); 
+                        char* verb = $1+1;
+                        if (center_flag)
+                            center_verb_text(verb);
+                        else
+                            fprintf(fpout, "%s", verb); 
                     }
+                    else if (single_flag) { generate_formatted_text($1); print_line();}
+
                  }
                  |  entrylist  /* FOR center and tabular */
                                     {printf("center or tabular\n");}

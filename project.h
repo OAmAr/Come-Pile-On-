@@ -117,7 +117,7 @@ void vertical_space(char* s);
 void generate_item(char* s);
 void print_line();
 void generate_formatted_text(char* s);
-void print_verb_text(char* s);
+void center_verb_text(char* s);
 // util.c
 void print_blank_line();
 void  init_lines_so_far();

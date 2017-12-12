@@ -106,10 +106,10 @@ TwoTwo & ZZ & CCCC\\
 \label{heythere}
 \end{table}
 
-{\it Sportsman} do offending supported extremity breakfast by listed by touching each others spoons 
 \begin{center}
 \begin{verbatim}
 Sportsman do offending supported extremity breakfast by listed by touching each others spoons 
+cool this should be centered now
 \end{verbatim}
 \end{center}
 \end{document}
