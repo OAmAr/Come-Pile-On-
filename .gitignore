@@ -9,5 +9,3 @@ latextoc
 latexp3c.tab.c
 latexp3c.tab.h
 lex.yy.c
-log.txt
-latex.input.txt

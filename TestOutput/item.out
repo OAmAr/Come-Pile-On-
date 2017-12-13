@@ -1,0 +1,87 @@
+
+
+
+
+
+     A  block  of  a  itemize  within  a
+
+double   environment   should   maintain
+
+spacing! 
+
+     - Single is for Single spacing
+
+     - Verbatim allows text that matches
+
+     the  what  you  see is what you get
+
+     mode
+
+     -  Itemize  uses  ticks to indicate
+
+     items
+
+     Now  try  a  single nested block of
+
+two levels with an enumerate inside! 
+
+     - Single is for Single spacing
+
+          I.   Single   is   for  Single
+
+          spacing
+
+          II.  Verbatim allows text that
+
+          matches  the  what  you see is
+
+          what you get mode
+
+          III.  Itemize  uses  ticks  to
+
+
+                    i
+
+          indicate items
+
+          IV.  Center  allows a block to
+
+          be centered
+
+     - Verbatim allows text that matches
+
+     the  what  you  see is what you get
+
+     mode
+
+     -  Itemize  uses  ticks to indicate
+
+     items
+
+          ~ Single is for Single spacing
+
+          ~  Verbatim  allows  text that
+
+          matches  the  what  you see is
+
+          what you get mode
+
+          ~   Itemize   uses   ticks  to
+
+          indicate items
+
+          ~  Center allows a block to be
+
+          centered
+
+     -  Center  allows  a  block  to  be
+
+     centered
+
+
+
+
+
+
+                    j
+

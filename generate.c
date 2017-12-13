@@ -1,10 +1,12 @@
 /* THIS IS THE generate.c FILE */
 
 /*
- * Initial page starts with 5 new lines, this simply outputs them
+ * Initial page starts with 5 new lines, this simply outputs them,
  */
 void init_output_page(){
   fprintf(fpout, "\n\n\n\n\n");
+  for(int i = 0; i < 5; i++)
+    incr_lines_so_far();
   fflush(fpout);
   return;
 }
@@ -163,7 +165,6 @@ void vertical_space(char* s) {
       if (check_done_page()){                                //check if we're done with the page 
         print_page_number();                               //Print the page number if so
       }
-}
 }
 
 void generate_formatted_text(char* s){                    // generates string s as text

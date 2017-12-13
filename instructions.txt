@@ -1,0 +1,3 @@
+Documentation, grading sheet, and project logs are
+all in the Documentation directory. The documentation
+contains all the instructions to compile and run code.
