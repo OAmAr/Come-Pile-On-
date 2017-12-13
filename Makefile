@@ -3,6 +3,10 @@ EX=compiler
 
 all: latex bison
 	$(CC) latexp3c.tab.c -lfl -g -o $(EX)
+	cat Documentation/Documentation.tex | ./$(EX) &>/dev/null 
+	mv latexout Documentation/Documentation.tex
+	mv latextoc Documentation/Documentation.toc.tex
+	rm latexlog
 
 bison: latexp3c.y
 	bison -vd latexp3c.y

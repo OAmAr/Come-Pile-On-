@@ -45,12 +45,10 @@ well  as  populating latextoc, latexout,
 and  latexlog with the table of contents
 for  your  file, the compilation of your
 file,  and  any  log  messages generated
-during compilation, respectively. If you
-do  not  provide  a  filename,  all test
-files in the directory TestCases will be
-compiled  and  saved under TestOutput To
-compile   manually,  run  the  following
-commands, again replacing filename: 
+during compilation, respectively. 
+     To   compile   manually,   run  the
+following   commands,   again  replacing
+filename: 
      cat (filename) ./compiler 
      This    will   populate   latextoc,
 latexout,  and  latexlog  with  the  the
@@ -81,11 +79,11 @@ style before printing it to the table of
 contents. We've also added functionality
 so  that  the lines created by a section
 header  are  taken  into account for the
+total   lines   in   a  page,  and  will
+potentially   cause   a  page  break  in
 
                     2
 
-total   lines   in   a  page,  and  will
-potentially   cause   a  page  break  in
 between  them. Unlike with line spacing,
 we  do  not  skip printing newlines in a
 section  header  if they surround a page
@@ -125,12 +123,12 @@ newline,  and  then  just  increment the
 page and print the next line.
 
 
-                    3
-
-
 4 Page Numbering and Styles
 
 Keeping  track of the number of the page
+
+                    3
+
 was  implemented,  we  simply  used  the
 functions  provided  in  the grammar any
 time  we saw a page token to set the new
@@ -167,13 +165,13 @@ If  we  see the vertical spacing command
 we  simply  print  out  the  N new lines
 (where  N  is  the number specified) See
 the function vertical_space for details.
-
-                    4
-
      As  an  aside,  since  we  were not
 asked to implement the hspace command we
 do  not  handle it. As a result, writing
 the hspace command in the middle of text
+
+                    4
+
 will  break that line of text (causing a
 newline  to  print). This happens in the
 test file latex.tst. 
@@ -211,12 +209,12 @@ reset it once it has formatted the text.
 
 6.2 Formatting the text
 
-                    5
-
-
 In    generate_formatted_text,    before
 filling the line at all we check whether
 or  not  the escape characters should be
+
+                    5
+
 printed.  This  happens  if  the current
 it_flag  value  does not match the value
 from         the        last        time
@@ -253,13 +251,13 @@ we  don''t'  want  to include the escape
 characters in the length of the line. 
 
 
-
-                    6
-
 6.4 Printing differences
 
 Another  challenge was that as the slash
 commands   and   curly   brace   options
+
+                    6
+
 interrupt  textoptions, they would cause
 the  text  to be broken up. To deal with
 this,  we decided to only print the line
@@ -296,15 +294,15 @@ paragraph. To avoid messing up the line,
 when   we   detect   this   newline   we
 immediately print it out and skip to the
 next             iteration            in
-
-                    7
-
 generate_formatted_text.
 
 
 7.2 Indentation
 
 A  user  can specify not to indent a new
+
+                    7
+
 paragraph   by   using   the   newindent
 command.  This  gets handled by the code
 in  latex.l which passes along a newline
@@ -339,15 +337,15 @@ non-space character in the line to avoid
 doubling up on adding spaces. 
 Note  that  due to escape characters the
 text in latexout may not look justified.
-
-                    8
-
 Rest assured this is only becuase of the
 presence of the escapes characters which
 would not be printed by a text processor
 that  is  processing  the document. Note
 that  the  behavior  works  fine  in  an
 Ubuntu 16.04 terminal. 
+
+                    8
+
 
 
 9 Single Blocks
@@ -382,15 +380,15 @@ itemize_stack keeps track of the current
 nesting  level  of the blocks as well as
 the  current  option,  either itemize or
 enumerate.  In  addition,  there  is the
-
-                    9
-
 enumeration_stack  which  keeps track of
 the  count  for  each enumerate block on
 the   stack.  This  allows  us  to  nest
 itemize and enumerate blocks and be able
 to  keep  track  of  what  we  should be
 printing   as   well  as  keep  seperate
+
+                    9
+
 enumeration  counts  for each level (max
 of 3 levels). 
 Additionally,  we have styled each level
@@ -425,15 +423,15 @@ the following:
 In   the  grammar,  center  blocks  work
 similarly to single and verbatim blocks,
 when the token is seen, the flag is set.
-
-                    10
-
 In  print_line,  we  look  to see if the
 print_flag  is set, and if so, we center
 it  by  padding  the  right  side of the
 string  with  the  necessary  amount  of
 spaces.  This  is  done  for  all  lines
 printed,  including tables but excluding
+
+                    10
+
 verbatim  lines,  for  which  we wrote a
 specific function center_verb_text which
 will   be   discussed  in  the  verbatim
@@ -469,9 +467,6 @@ centers  all  other  lines on that line,
 and    prints    each   line   just   as
 print_verbatim_text would 
 
-                    11
-
-
 
 13 Tables
 
@@ -480,6 +475,9 @@ print_verbatim_text would
 13.1 Setting up the tables
 
 Getting  tables  to  work was one of the
+
+                    11
+
 most  challenging parts of this project.
 We  defined  a  struct  for  a  table in
 project.h.  When  a  new  table block is
@@ -511,9 +509,6 @@ so  that  the entries of each column can
 be justified properly. Then, print_table
 iterates  over  the  matrix of cells and
 justifies  each  (in accordance with the
-
-                    12
-
 column  spec), then adds the cell to the
 line buffer. At the end of each row, the
 line  is  printed to print the row. Once
@@ -525,6 +520,9 @@ alongside the table id.
 13.3 Relocating tables
 
 We used a queue for tables with position
+
+                    12
+
 't' or 'b' so that we can delay printing
 them.  Each  time  a new page is started
 print_page_number will look at the queue
@@ -554,9 +552,6 @@ following:
      - free_table
      - set_cols
      - set_label
-
-                    13
-
      - set_caption
      - add_entry
      - table_justify
@@ -570,6 +565,9 @@ following:
 
 
 14 Type/Error Checking
+
+                    13
+
 
 
 
@@ -598,9 +596,6 @@ count  of  the  table.  If it is not, we
 throw an error and exit. 
 
 
-                    14
-
-
 15 Misc
 
 We  upped the text buffer from 512 bytes
@@ -612,8 +607,23 @@ all  functionality  at  the  same  time.
 There  are  some  isolated  tests in the
 directory   ourTests/Basic/   that  test
 single    features    of    basic   text
+
+                    14
+
 processing.  All commit messages/our log
 is contained in Project.log. 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
