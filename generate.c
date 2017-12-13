@@ -173,8 +173,16 @@ void vertical_space(char* s) {
   int n = atoi(s);                                        // get int value of input
   int i;
   for(i = 0; i < n; i++){                                  // print out n newlines
+<<<<<<< HEAD
     print_blank_line();
   }
+=======
+      print_blank_line();
+      if (check_done_page()){                                //check if we're done with the page 
+        print_page_number();                               //Print the page number if so
+      }
+    }
+>>>>>>> cfa33f83eaf660d2d2d63b15254d2baf3b7e7dd2
 }
 
 void generate_formatted_text(char* s){                    // generates string s as text
@@ -260,7 +268,7 @@ void print_verb_text(char* s){
   bzero(tmp_line, slen);                    //init to zero
   for(int i=0; i < slen; i++){              //loop finds seperates into newline strings
     tmp_line[cur++] = s[i];
-    if (s[i] == '\n'){                      //When we see a new line, we center the previous line
+    if (s[i] == '\n'){                      //When we see a new line, we print the line
       tmp_line[cur] = '\0';                 //null terminates that string
       fprintf(fpout, "%s", tmp_line);                   //prints that string
       incr_lines_so_far();

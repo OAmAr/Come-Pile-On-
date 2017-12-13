@@ -81,25 +81,20 @@ following:
      changes   that  were  made  to  the
      grammar, etc. The key word is MAJOR
      design  steps. NOTE AGAIN THAT YOUR
+
+                    2
+
      DOCUMENTATION   MUST  BE  GENERATED
      USING YOUR LATEX COMPILER!!!!
      3.  Test cases and test results for
      all   tasks,   clearly  marked  and
      organized.
-
-                    2
-
      4.  The directory location for your
      files   and   detailed  compilation
      instructions.
     [3m   IMPORTANT:[0m   Do   not  open  your
 directory  for access by the world until
 7:00 p.m. on May 2. 
-
-
-
-
-
 
 
 
