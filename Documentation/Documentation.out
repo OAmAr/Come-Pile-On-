@@ -76,23 +76,16 @@ that  the  page  number was always being
 writen  to  the  table  of  contents  as
 arabic, so we converted it to the proper
 style before printing it to the table of
-contents. We've also added functionality
-so  that  the lines created by a section
-header  are  taken  into account for the
-total   lines   in   a  page,  and  will
-potentially   cause   a  page  break  in
-
-                    2
-
-between  them. Unlike with line spacing,
-we  do  not  skip printing newlines in a
-section  header  if they surround a page
-break. 
+contents. 
      When         formatting         the
 section/subsection  headers,  we assumed
 that a reasonable way to format would be
 to  print  two  newlines  before and one
-after tthis.
+
+                    2
+
+after  the  header,  and incremement the
+line count by 4 to account for this.
 
 
 3 Linespacing
@@ -126,14 +119,14 @@ page and print the next line.
 4 Page Numbering and Styles
 
 Keeping  track of the number of the page
-
-                    3
-
 was  implemented,  we  simply  used  the
 functions  provided  in  the grammar any
 time  we saw a page token to set the new
 page number/style. To print in different
 styles,    we    wrote    a    function,
+
+                    3
+
 translate_page_no    to   translate   to
 different  page  styles, consult that if
 you'd  like the specifics. Converting to
@@ -169,13 +162,13 @@ the function vertical_space for details.
 asked to implement the hspace command we
 do  not  handle it. As a result, writing
 the hspace command in the middle of text
-
-                    4
-
 will  break that line of text (causing a
 newline  to  print). This happens in the
 test file latex.tst. 
 
+
+
+                    4
 
 6 Italics/Roman Fonts
 
@@ -212,14 +205,14 @@ reset it once it has formatted the text.
 In    generate_formatted_text,    before
 filling the line at all we check whether
 or  not  the escape characters should be
-
-                    5
-
 printed.  This  happens  if  the current
 it_flag  value  does not match the value
 from         the        last        time
 generate_formatted_text  was called. The
 reason  this  works is because the slash
+
+                    5
+
 commands  interrupt  the text options so
 each  time  there  is  a  font  changing
 command generate_formatted_text will get
@@ -255,14 +248,14 @@ characters in the length of the line.
 
 Another  challenge was that as the slash
 commands   and   curly   brace   options
-
-                    6
-
 interrupt  textoptions, they would cause
 the  text  to be broken up. To deal with
 this,  we decided to only print the line
 buffer  when  it was full or when we had
 reached  points  where  the  text  for a
+
+                    6
+
 given  block  should end (such as at the
 start  of a new section, or the start of
 a  new begin block). More details can be
@@ -300,12 +293,12 @@ generate_formatted_text.
 7.2 Indentation
 
 A  user  can specify not to indent a new
-
-                    7
-
 paragraph   by   using   the   newindent
 command.  This  gets handled by the code
 in  latex.l which passes along a newline
+
+                    7
+
 rather  than a newline and a tab through
 the  grammer  if  the  no indent flag is
 set.  This  prevents the textoption from
@@ -344,11 +337,11 @@ that  is  processing  the document. Note
 that  the  behavior  works  fine  in  an
 Ubuntu 16.04 terminal. 
 
-                    8
-
-
 
 9 Single Blocks
+
+                    8
+
 
 Single blocks required some modification
 to  the  grammar,  namely, when we saw a
@@ -386,12 +379,12 @@ the   stack.  This  allows  us  to  nest
 itemize and enumerate blocks and be able
 to  keep  track  of  what  we  should be
 printing   as   well  as  keep  seperate
-
-                    9
-
 enumeration  counts  for each level (max
 of 3 levels). 
 Additionally,  we have styled each level
+
+                    9
+
 differently as such: 
      - Itemize Level 1
           ~ Itemize Level 3
@@ -429,12 +422,12 @@ it  by  padding  the  right  side of the
 string  with  the  necessary  amount  of
 spaces.  This  is  done  for  all  lines
 printed,  including tables but excluding
-
-                    10
-
 verbatim  lines,  for  which  we wrote a
 specific function center_verb_text which
 will   be   discussed  in  the  verbatim
+
+                    10
+
 section.  Because  tables  are sometimes
 delayed  in  printing, we include a flag
 in  the table struct that keeps track of
@@ -519,10 +512,10 @@ alongside the table id.
 
 13.3 Relocating tables
 
-We used a queue for tables with position
-
                     12
 
+
+We used a queue for tables with position
 't' or 'b' so that we can delay printing
 them.  Each  time  a new page is started
 print_page_number will look at the queue
@@ -561,13 +554,13 @@ following:
      - end_doc_cleanup
      - test_bottom
      - print_bottom
+
+                    13
+
      - Table definition in project.h
 
 
 14 Type/Error Checking
-
-                    13
-
 
 
 
@@ -604,17 +597,14 @@ surpasses  512  characters. For testing,
 we   put   all   of   our   tests   into
 latex.input.tst,  so  that we could test
 all  functionality  at  the  same  time.
-There  are  some  isolated  tests in the
-directory   ourTests/Basic/   that  test
-single    features    of    basic   text
 
                     14
 
+There  are  some  isolated  tests in the
+directory   ourTests/Basic/   that  test
+single    features    of    basic   text
 processing.  All commit messages/our log
 is contained in Project.log. 
-
-
-
 
 
 

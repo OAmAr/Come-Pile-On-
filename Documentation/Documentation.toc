@@ -1,0 +1,56 @@
+
+1 Compilation and Usage ---------- PAGE 1
+
+1.1 Compilation ---------- PAGE 1
+
+1.2 Usage ---------- PAGE 1
+
+2 Sections/Subsections/Table of Contents ---------- PAGE 2
+
+3 Linespacing ---------- PAGE 3
+
+4 Page Numbering and Styles ---------- PAGE 3
+
+5 Vertical Spacing ---------- PAGE 4
+
+6 Italics/Roman Fonts ---------- PAGE 5
+
+6.1 Setting flags ---------- PAGE 5
+
+6.2 Formatting the text ---------- PAGE 5
+
+6.3 Handling the line buffer ---------- PAGE 6
+
+6.4 Printing differences ---------- PAGE 6
+
+7 Paragraphs and Indentation ---------- PAGE 7
+
+7.1 Paragraphs ---------- PAGE 7
+
+7.2 Indentation ---------- PAGE 7
+
+8 Right Justification ---------- PAGE 8
+
+9 Single Blocks ---------- PAGE 9
+
+10 Itemize And Enumerate ---------- PAGE 9
+
+11 Center Blocks ---------- PAGE 10
+
+12 Verbatim Blocks ---------- PAGE 11
+
+13 Tables ---------- PAGE 11
+
+13.1 Setting up the tables ---------- PAGE 11
+
+13.2 Printing the tables ---------- PAGE 12
+
+13.3 Relocating tables ---------- PAGE 13
+
+14 Type/Error Checking ---------- PAGE 14
+
+14.1 Block Matching ---------- PAGE 14
+
+14.2 Tabular Specification ---------- PAGE 14
+
+15 Misc ---------- PAGE 14
