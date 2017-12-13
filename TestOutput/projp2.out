@@ -12,8 +12,8 @@ second  part  of  the project is divided
 into  two  major  tasks,  and is worth a
 total of 50 points:
      1.  Revising  the common grammar to
-     remove the shift or reduce and rule
-     not    reduced   conflicts.   These
+     remove  the  shift  or  reduce  and
+     rule-not-reduced  conflicts.  These
      corrections are made to the yacc or
      bison  file, and the result must be
      tested  extensively  for  different

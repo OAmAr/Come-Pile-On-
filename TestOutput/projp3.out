@@ -18,7 +18,7 @@ points. The tasks for the project are:
      Capabilities   (35  points  total),
      including: Section Subsection Table
      of  Contents  (5pts),  Line Spacing
-     Single  Double  Triple (5pts), Page
+     Single-Double-Triple  (5pts),  Page
      Numbering      Styles     (2.5pts),
      Horizontal     Vertical     Spacing
      (2.5pts),   Italics   Roman   Fonts
@@ -42,7 +42,7 @@ points. The tasks for the project are:
                     1
 
      Single Environment
-     5.  Bonus  B:  Full Blown Verbatim:
+     5.  Bonus  B:  Full-Blown Verbatim:
      All  possible  Latex  commands that
      are  embedded  in  a verbatim block
      (e.g., backslash, blocks, etc.) are
@@ -64,7 +64,7 @@ following:
      tasks 1, 2, and 3. DO NOT HAND IN C
      files!  Also  include copies of any
      relevant  C  files.  Make sure that
-     these  are  well  commented, clear,
+     these  are  well-commented,  clear,
      and organized.
      2.  Documentation  of your solution
      that  includes: (1) any assumptions

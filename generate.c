@@ -14,10 +14,14 @@ void init_output_page(){
  * This function takes a section number and a section name and generates a header for them
  */
 void  generate_sec_header(int i, char* s){
-  fprintf(fpout, "\n\n%d %s\n\n", i, s);
+  for(int i = 0; i < 2; i++) print_blank_line();
+  fprintf(fpout, "%d %s\n", i, s);
+  incr_lines_so_far();
+  if(check_done_page()){                                //check if we're done with the page 
+      print_page_number();                               //Print the page number if so
+  }
+  print_blank_line();
   fflush(fpout);
-  for(int i = 0; i < 4; i++)
-    incr_lines_so_far();
 
   if (get_gen_toc() == TOC_ON)
     fprintf(fptoc, "\n%d %s ---------- PAGE %d\n", i, s, get_page_no());
@@ -27,10 +31,15 @@ void  generate_sec_header(int i, char* s){
  * ASSUMPTION, TOC should preserve page style
  */
 void  generate_subsec_header(int i,int j, char *s){
-  fprintf(fpout, "\n\n%d.%d %s\n\n", i, j, s);
+  for(int i = 0; i < 2; i++) print_blank_line();
+  fprintf(fpout, "%d.%d %s\n", i, j, s);
+  incr_lines_so_far();
+  if(check_done_page()){                                //check if we're done with the page 
+      print_page_number();                               //Print the page number if so
+  }
+  print_blank_line();
   fflush(fpout);
-  for(int i = 0; i < 4; i++)
-    incr_lines_so_far();
+
   if (get_gen_toc() == TOC_ON){
       char* page = translate_page_no(get_page_no(), get_page_style());
       fprintf(fptoc, "\n%d.%d %s ---------- PAGE %s\n", i, j, s,page);
@@ -71,7 +80,10 @@ char* translate_page_no(int n, int style) {                    // this translate
  */
 
 void print_page_number(){                                    // fills the rest of the page with blank space, prints the page number, and prints any t tables on the next page
-  while(! check_done_page()) print_blank_line();             // print blank lines until the page is full
+  while(! check_done_page()) {                               // print blank lines until the page is full
+    fprintf(fpout, "\n");                                    // can't call print_blank line since it'll re-call this              
+    incr_lines_so_far();
+  }             
   fprintf(fpout, "\n");                                      // print out a line to indicate end of page (style decision)
   for(int i=0; i<20; i++) fprintf(fpout, " ");               // Print out 20 spaces in front of the page number
   char* page = translate_page_no(get_page_no(), get_page_style()); // translate the current page number into the appropriate style
@@ -161,10 +173,8 @@ void vertical_space(char* s) {
   int n = atoi(s);                                        // get int value of input
   int i;
   for(i = 0; i < n; i++){                                  // print out n newlines
-      print_blank_line();
-      if (check_done_page()){                                //check if we're done with the page 
-        print_page_number();                               //Print the page number if so
-      }
+    print_blank_line();
+  }
 }
 
 void generate_formatted_text(char* s){                    // generates string s as text

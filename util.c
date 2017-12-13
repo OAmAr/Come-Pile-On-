@@ -6,6 +6,9 @@
 void print_blank_line() {              
   fprintf(fpout, "\n");
   incr_lines_so_far();
+  if(check_done_page()){                                //check if we're done with the page 
+      print_page_number();                               //Print the page number if so
+  }
 }
 /*
  * Checks to see if a string is completely whitespace
@@ -357,9 +360,6 @@ void print_table(Table* table) {
   print_line();                              // print the caption
   if(table->caption != NULL) { // print a blank line to make space after the caption
     print_blank_line();
-    if (check_done_page()){                                //check if we're done with the page 
-      print_page_number();                               //Print the page number if so
-    }
   }
   table_flag = tmp_flag;                     // reset table_flag and center_flag
   center_flag = tmp_center;

@@ -17,7 +17,7 @@ major parts.
      you  at  a  later  date)  using Lex
      (Flex) and Yacc (Bison).
      3.  Design,  implement,  and test a
-     syntax directed translator based on
+     syntax-directed translator based on
      part 2 that automatically generates
      formatted  ASCII text from an input
      Latex source file.
@@ -30,7 +30,7 @@ into two major tasks.
      important      language      design
      experience.
      -  Calculate  FIRST  and FOLLOW for
-     the non terminals listed below:
+     the non-terminals listed below:
 latex statement    main body        main option      text option
 latex options      backs options    begin end opts   begin block
 begin end cmds     table options    

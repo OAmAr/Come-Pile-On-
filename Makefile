@@ -9,7 +9,7 @@ bison: latexp3c.y
 latex: latex.l
 	flex latex.l
 test: all
-	./$(EX) < latex.input.txt; printf "\n________\n" ;  cat latexout 
+	./$(EX) < OurTests/latex.input.txt; printf "\n________\n" ;  cat latexout 
 
 clean:
 	rm -rf lex.yy.c *.tab.* a.out latexp3c.output latexlog latextoc latexout $(EX)

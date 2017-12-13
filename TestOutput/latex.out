@@ -83,13 +83,13 @@ read.
 
 
 
+                    6
+
+
 
 
 
      A  text  processor is a very useful
-
-
-                    6
 
 tool,  since  it  allows  us  to develop
 
@@ -125,14 +125,14 @@ We   have   seen  that  there  are  many
 
 different  Latex  commands,  that can be
 
+
+                    7
+
 used  in  many  different ways. However,
 
 sometimes, we wish to use a character to
 
 mean  itself,  and  override  its  Latex
-
-
-                    7
 
 interpretation.   For  example,  to  use
 
@@ -169,14 +169,14 @@ begin   end   blocks  in  a  programming
 
 language,  since  they  set  a scope. We
 
+
+                    8
+
 have discussed a number of examples. 
 
     [3m  It  is  important to note, even at
 
 this  early  stage,  that  lists  may be
-
-
-                    8
 
 created   within   lists,  allowing  the
 
@@ -212,14 +212,14 @@ have discussed a number of examples.
 
 Finally,  there  are[3m  many  other useful[0m
 
+
+                    9
+
 commands  that involve begin end blocks,
 
 that  establish  an  environment.  These
 
 blocks  behave  in  a similar fashion to
-
-
-                    9
 
 begin   end   blocks  in  a  programming
 
@@ -257,6 +257,9 @@ everything still ok?
 
 When   things   are   switched  back  is
 
+
+                    10
+
 everything still ok? 
 
 
@@ -264,9 +267,6 @@ everything still ok?
 7 What about this?
 
 When   things   are   switched  back  is
-
-
-                    10
 
 everything still ok? 
 
@@ -293,14 +293,6 @@ everything still ok?
 When   things   are   switched  back  is
 
 everything still ok? 
-
-
-
-
-
-
-
-
 
 
 
