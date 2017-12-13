@@ -14,11 +14,14 @@ void init_output_page(){
  * This function takes a section number and a section name and generates a header for them
  */
 void  generate_sec_header(int i, char* s){
-  fprintf(fpout, "\n\n%d %s\n\n", i, s);
   fflush(fpout);
-  for(int i = 0; i < 4; i++)
-    incr_lines_so_far();
-
+  for(int i = 0; i < 2; i++)
+      print_blank_line();
+  fprintf(fpout, "%d %s\n", i, s);
+  if (check_done_page())
+    print_page_number();
+  incr_lines_so_far();
+  print_blank_line();
   if (get_gen_toc() == TOC_ON)
     fprintf(fptoc, "\n%d %s ---------- PAGE %d\n", i, s, get_page_no());
 }
@@ -165,6 +168,7 @@ void vertical_space(char* s) {
       if (check_done_page()){                                //check if we're done with the page 
         print_page_number();                               //Print the page number if so
       }
+    }
 }
 
 void generate_formatted_text(char* s){                    // generates string s as text
@@ -250,7 +254,7 @@ void print_verb_text(char* s){
   bzero(tmp_line, slen);                    //init to zero
   for(int i=0; i < slen; i++){              //loop finds seperates into newline strings
     tmp_line[cur++] = s[i];
-    if (s[i] == '\n'){                      //When we see a new line, we center the previous line
+    if (s[i] == '\n'){                      //When we see a new line, we print the line
       tmp_line[cur] = '\0';                 //null terminates that string
       fprintf(fpout, "%s", tmp_line);                   //prints that string
       incr_lines_so_far();
