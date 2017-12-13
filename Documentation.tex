@@ -16,6 +16,10 @@ simply print out the N new lines (where N is the number specified)
 
 See the function vertical_space for details.
 
+As an aside, since we were not asked to implement the hspace command we do not handle
+it. As a result, writing the hspace command in the middle of text will break that line
+of text (causing a newline to print). This happens in the test file latex.tst.
+
 \section{Italics/Roman Fonts}
 
 This section proved to be much more difficult than we expected. The first challenge
@@ -215,5 +219,9 @@ do not match, we throw an error and exit.
 As we add entries to the table we check each one to make sure it is valid. We do this by
 checking the ampersand count to ensure that it is 1 less than the column count of the
 table. If it is not, we throw an error and exit.
+
+\section{Misc}
+We upped the text buffer from 512 bytes to 1024 as the text in latex.tst surpasses 512
+characters.
 
 \end{document}

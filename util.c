@@ -158,6 +158,8 @@ int next_char(char* s, int offset) { // returns the next non-space character aft
 
 void right_justify() { // right justifies a single line
   int length = strlen(line); // get total length of whole string, italics characters included
+  if(line[length-1] == ' ') // ran into issue with having a space as the last character
+    line[(length--)-1] = 0;
   int llen = length - spec_chars; // get length of meaningful text
   int i, j, just, n = 0, found_character = 0;
   if (length < 1) // nothing to justify

@@ -8,6 +8,8 @@ void init_output_page(){
 void  generate_sec_header(int i, char* s){
   fprintf(fpout, "\n\n%d %s\n\n", i, s);
   fflush(fpout);
+  for(int i = 0; i < 4; i++)
+    incr_lines_so_far();
 
   if (get_gen_toc() == TOC_ON)
     fprintf(fptoc, "\n%d %s ---------- PAGE %d\n", i, s, get_page_no());
@@ -16,6 +18,8 @@ void  generate_sec_header(int i, char* s){
 void  generate_subsec_header(int i,int j, char *s){
   fprintf(fpout, "\n\n%d.%d %s\n\n", i, j, s);
   fflush(fpout);
+  for(int i = 0; i < 4; i++)
+    incr_lines_so_far();
   if (get_gen_toc() == TOC_ON)
     fprintf(fptoc, "\n%d.%d %s ---------- PAGE %d\n", i, j, s, get_page_no());
 }
