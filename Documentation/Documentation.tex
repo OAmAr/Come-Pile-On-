@@ -27,7 +27,7 @@ To use test.sh, run the following commands (replacing (filename)  with the filen
 
 ./test.sh  (filename)
 
-This will print the output of compiling your file to the console, as well as populating latextoc, latexout, and latexlog with the table of contents for your file, the compilation of your file, and any log messages generated during compilation, respectively.
+This will print the output of compiling your file to the console, as well as populating latextoc, latexout, and latexlog with the table of contents for your file, the compilation of your file, and any log messages generated during compilation, respectively. Additionally, if you do not provide a filename, then test.sh will compile and store all the input files of TestCases in corresponding files in TestOut. 
 
 To compile manually, run the following commands, again replacing filename:
 
@@ -37,9 +37,9 @@ This will populate latextoc, latexout, and latexlog with the the table of conten
 
 \section{Sections/Subsections/Table of Contents}
 
-The majority of these features were given to us as part of the handout, but we had to implement some fixes. Previously, subsections were off by one section number, because at each section the current section number gets incremented, and then subsections used that section header. To fix this, we simply call a subtracted one from the value subsections use to print their section number. Additionally, we noticed that the page number was always being writen to the table of contents as arabic, so we converted it to the proper style before printing it to the table of contents.
+The majority of these features were given to us as part of the handout, but we had to implement some fixes. Previously, subsections were off by one section number, because at each section the current section number gets incremented, and then subsections used that section header. To fix this, we simply call a subtracted one from the value subsections use to print their section number. Additionally, we noticed that the page number was always being writen to the table of contents as arabic, so we converted it to the proper style before printing it to the table of contents. 
 
-When formatting the section/subsection headers, we assumed that a reasonable way to format would be to print two newlines before and one after the header, and incremement the line count by 4 to account for this. 
+When formatting the section/subsection headers, we assumed that a reasonable way to format would be to print two newlines before and one after the header, and incremement the line count by 4 to account for this. If any line of a section header were to spill over a page boundary, a new page will be generated and it will be printed on the correct side.
 
 \section{Linespacing}
 
@@ -51,7 +51,7 @@ One thing we assumed for this is that if linespacing after a line caused the pag
 
 Keeping track of the number of the page was implemented, we simply used the functions provided in the grammar any time we saw a page token to set the new page number/style. To print in different styles, we wrote a function, translate_page_no to translate to different page styles, consult that if you'd like the specifics. Converting to alphabet characters was relatively simple, we did it simply by adding an integer to the character 'a'. Converting to roman characters we did by using a function, converToRoman, that we got off of the internet (the attribution is in the code). 
 
-Every time a line is printed, we check to see if the page has completed, and if it has, we print the current page number in the current page style and increment it. When we print a new page number,we print it centered in the page and surround it by a new line on either side, which we assumed was a reasonable way to format this. Additionally, if the style is alph or Alph, and the page number is greater than 26, we revert to the arabic style until otherwise directed.
+Every time a line is printed, we check to see if the page has completed, and if it has, we print the current page number in the current page style and increment it. When we print a new page number,we print it centered in the page and surround it by a new line on either side, which we assumed was a reasonable way to format this. Additionally, if the style is alph or Alph, and the page number is greater than 26, we revert to the arabic style until otherwise directed. Page number n will always be printed on the 43*n-1'th line. This is because a page is 40 lines, so we begin printing the page number 1 line after that, with a newline, followed by the pagenumber itself on it's own line, followed by another newline. This formatting was chosed in an effort to allow each line to have 40 lines of text, and to give the page numbers some space to be aesthetically pleasing. 
 
 
 \section{Vertical Spacing}

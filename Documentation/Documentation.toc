@@ -9,7 +9,7 @@
 
 3 Linespacing ---------- PAGE 3
 
-4 Page Numbering and Styles ---------- PAGE 3
+4 Page Numbering and Styles ---------- PAGE 4
 
 5 Vertical Spacing ---------- PAGE 4
 
@@ -27,7 +27,7 @@
 
 7.1 Paragraphs ---------- PAGE 7
 
-7.2 Indentation ---------- PAGE 7
+7.2 Indentation ---------- PAGE 8
 
 8 Right Justification ---------- PAGE 8
 
@@ -39,9 +39,9 @@
 
 12 Verbatim Blocks ---------- PAGE 11
 
-13 Tables ---------- PAGE 11
+13 Tables ---------- PAGE 12
 
-13.1 Setting up the tables ---------- PAGE 11
+13.1 Setting up the tables ---------- PAGE 12
 
 13.2 Printing the tables ---------- PAGE 12
 
@@ -53,4 +53,4 @@
 
 14.2 Tabular Specification ---------- PAGE 14
 
-15 Misc ---------- PAGE 14
+15 Misc ---------- PAGE 15

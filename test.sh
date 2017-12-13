@@ -11,4 +11,6 @@ else
 		./$EX < "$f"
 		cat latexout > TestOutput/"${name%.tst}".out
 	done
+    clear
+    printf "All files in TestCases/ have been successfully compiled and stored in TestOutput/\n"
 fi

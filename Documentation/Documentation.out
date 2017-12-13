@@ -45,10 +45,13 @@ well  as  populating latextoc, latexout,
 and  latexlog with the table of contents
 for  your  file, the compilation of your
 file,  and  any  log  messages generated
-during compilation, respectively. 
-     To   compile   manually,   run  the
-following   commands,   again  replacing
-filename: 
+during     compilation,    respectively.
+Additionally,  if  you  do not provide a
+filename,  then test.sh will compile and
+store  all  the input files of TestCases
+in  corresponding  files  in TestOut. To
+compile   manually,  run  the  following
+commands, again replacing filename: 
      cat (filename) ./compiler 
      This    will   populate   latextoc,
 latexout,  and  latexlog  with  the  the
@@ -56,7 +59,7 @@ table  of  contents  for  your file, the
 output  of  compiling your file, and any
 log   messages   that   may   have  been
 generated       during      compilation,
-respectively. 
+respectively.
 
 
 2 Sections/Subsections/Table of Contents
@@ -76,16 +79,19 @@ that  the  page  number was always being
 writen  to  the  table  of  contents  as
 arabic, so we converted it to the proper
 style before printing it to the table of
-contents. 
-     When         formatting         the
+contents.     When     formatting    the
 section/subsection  headers,  we assumed
-that a reasonable way to format would be
-to  print  two  newlines  before and one
 
                     2
 
+that a reasonable way to format would be
+to  print  two  newlines  before and one
 after  the  header,  and incremement the
-line count by 4 to account for this.
+line  count by 4 to account for this. If
+any  line  of  a  section header were to
+spill  over  a page boundary, a new page
+will be generated and it will be printed
+on the correct side. 
 
 
 3 Linespacing
@@ -118,15 +124,15 @@ page and print the next line.
 
 4 Page Numbering and Styles
 
+
+                    3
+
 Keeping  track of the number of the page
 was  implemented,  we  simply  used  the
 functions  provided  in  the grammar any
 time  we saw a page token to set the new
 page number/style. To print in different
 styles,    we    wrote    a    function,
-
-                    3
-
 translate_page_no    to   translate   to
 different  page  styles, consult that if
 you'd  like the specifics. Converting to
@@ -161,14 +167,14 @@ the function vertical_space for details.
      As  an  aside,  since  we  were not
 asked to implement the hspace command we
 do  not  handle it. As a result, writing
+
+                    4
+
 the hspace command in the middle of text
 will  break that line of text (causing a
 newline  to  print). This happens in the
 test file latex.tst. 
 
-
-
-                    4
 
 6 Italics/Roman Fonts
 
@@ -204,15 +210,15 @@ reset it once it has formatted the text.
 
 In    generate_formatted_text,    before
 filling the line at all we check whether
+
+                    5
+
 or  not  the escape characters should be
 printed.  This  happens  if  the current
 it_flag  value  does not match the value
 from         the        last        time
 generate_formatted_text  was called. The
 reason  this  works is because the slash
-
-                    5
-
 commands  interrupt  the text options so
 each  time  there  is  a  font  changing
 command generate_formatted_text will get
@@ -247,15 +253,15 @@ characters in the length of the line.
 6.4 Printing differences
 
 Another  challenge was that as the slash
+
+                    6
+
 commands   and   curly   brace   options
 interrupt  textoptions, they would cause
 the  text  to be broken up. To deal with
 this,  we decided to only print the line
 buffer  when  it was full or when we had
 reached  points  where  the  text  for a
-
-                    6
-
 given  block  should end (such as at the
 start  of a new section, or the start of
 a  new begin block). More details can be
@@ -290,15 +296,15 @@ next             iteration            in
 generate_formatted_text.
 
 
+
+                    7
+
 7.2 Indentation
 
 A  user  can specify not to indent a new
 paragraph   by   using   the   newindent
 command.  This  gets handled by the code
 in  latex.l which passes along a newline
-
-                    7
-
 rather  than a newline and a tab through
 the  grammer  if  the  no indent flag is
 set.  This  prevents the textoption from
@@ -333,15 +339,15 @@ text in latexout may not look justified.
 Rest assured this is only becuase of the
 presence of the escapes characters which
 would not be printed by a text processor
+
+                    8
+
 that  is  processing  the document. Note
 that  the  behavior  works  fine  in  an
 Ubuntu 16.04 terminal. 
 
 
 9 Single Blocks
-
-                    8
-
 
 Single blocks required some modification
 to  the  grammar,  namely, when we saw a
@@ -376,15 +382,15 @@ enumerate.  In  addition,  there  is the
 enumeration_stack  which  keeps track of
 the  count  for  each enumerate block on
 the   stack.  This  allows  us  to  nest
+
+                    9
+
 itemize and enumerate blocks and be able
 to  keep  track  of  what  we  should be
 printing   as   well  as  keep  seperate
 enumeration  counts  for each level (max
 of 3 levels). 
 Additionally,  we have styled each level
-
-                    9
-
 differently as such: 
      - Itemize Level 1
           ~ Itemize Level 3
@@ -419,15 +425,15 @@ when the token is seen, the flag is set.
 In  print_line,  we  look  to see if the
 print_flag  is set, and if so, we center
 it  by  padding  the  right  side of the
+
+                    10
+
 string  with  the  necessary  amount  of
 spaces.  This  is  done  for  all  lines
 printed,  including tables but excluding
 verbatim  lines,  for  which  we wrote a
 specific function center_verb_text which
 will   be   discussed  in  the  verbatim
-
-                    10
-
 section.  Because  tables  are sometimes
 delayed  in  printing, we include a flag
 in  the table struct that keeps track of
@@ -463,14 +469,14 @@ print_verbatim_text would
 
 13 Tables
 
+                    11
+
+
 
 
 13.1 Setting up the tables
 
 Getting  tables  to  work was one of the
-
-                    11
-
 most  challenging parts of this project.
 We  defined  a  struct  for  a  table in
 project.h.  When  a  new  table block is
@@ -505,15 +511,15 @@ justifies  each  (in accordance with the
 column  spec), then adds the cell to the
 line buffer. At the end of each row, the
 line  is  printed to print the row. Once
+
+                    12
+
 all  the  rows are printed, if the table
 has  a  caption  the  caption is printed
 alongside the table id. 
 
 
 13.3 Relocating tables
-
-                    12
-
 
 We used a queue for tables with position
 't' or 'b' so that we can delay printing
@@ -548,15 +554,15 @@ following:
      - set_caption
      - add_entry
      - table_justify
+
+                    13
+
      - print_table
      - table_lines
      - print_page_number
      - end_doc_cleanup
      - test_bottom
      - print_bottom
-
-                    13
-
      - Table definition in project.h
 
 
@@ -591,26 +597,20 @@ throw an error and exit.
 
 15 Misc
 
+
+                    14
+
 We  upped the text buffer from 512 bytes
 to   1024   as  the  text  in  latex.tst
 surpasses  512  characters. For testing,
 we   put   all   of   our   tests   into
 latex.input.tst,  so  that we could test
 all  functionality  at  the  same  time.
-
-                    14
-
 There  are  some  isolated  tests in the
 directory   ourTests/Basic/   that  test
 single    features    of    basic   text
 processing.  All commit messages/our log
 is contained in Project.log. 
-
-
-
-
-
-
 
 
 
