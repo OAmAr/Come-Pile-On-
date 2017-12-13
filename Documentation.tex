@@ -1,0 +1,274 @@
+\begin{document}
+\pagenumbering{arabic} 
+\arabic{1} 
+\renewcommand{\baselinestretch}{1}
+
+\section{Compilation and Usage}
+
+\subsection{Compilation}
+To compile, you can either use the Makefile we provide, or compile by hand.
+
+Using the Makefile, you simply run the command `make` in the directory containing the Makefile and the project files, and the executable will be named "compiler"
+
+To do it manually, you can run the following commands (replacing "(EX)" with the name of the executable you desire.
+
+\begin{itemize}
+     \item flex latex.l
+     \item bison -vd latexp3c.y
+     \item gcc latexp3c.tab.c -lfl -o (EX)
+\end{itemize}
+
+\subsection{Usage}
+
+To use the compiler to compile a latex input file, you can use the script we provide, test.sh, or do it manually.
+
+To use test.sh, run the following commands (replacing (filename)  with the filename of the latex file you would like to compile):
+
+./test.sh  (filename)
+
+This will print the output of compiling your file to the console, as well as populating latextoc, latexout, and latexlog with the table of contents for your file, the compilation of your file, and any log messages generated during compilation, respectively.
+
+To compile manually, run the following commands, again replacing filename:
+
+cat  (filename) | ./compiler
+
+This will populate latextoc, latexout, and latexlog with the the table of contents for your file, the output of compiling your file, and any log messages that may have been generated during compilation, respectively.
+
+\section{Sections/Subsections/Table of Contents}
+
+The majority of these features were given to us as part of the handout, but we had to implement some fixes. Previously, subsections were off by one section number, because at each section the current section number gets incremented, and then subsections used that section header. To fix this, we simply call a subtracted one from the value subsections use to print their section number. Additionally, we noticed that the page number was always being writen to the table of contents as arabic, so we converted it to the proper style before printing it to the table of contents.
+
+When formatting the section/subsection headers, we assumed that a reasonable way to format would be to print two newlines before and one after the header, and incremement the line count by 4 to account for this. 
+
+\section{Linespacing}
+
+To implement line spacing, we used a global variable that was changed by the baselinestretch command. Any time we printed a line, we would use the linespacing variable as a key into an array of newlines, and used that as part of the formatting string every time we printed a line. To make this play nicely with single blocks, at the start of print line we keep track of the original linespacing value, and set linespacing equal to 1 if single is set. That way we can just use the print\_line function to print single blocks. At the end of print, we reset the linespacing variable to what it was before the call.
+
+One thing we assumed for this is that if linespacing after a line caused the page to roll over, you would not print the remaining spacing on the new page. That is, if we are in triple space and on line 39 of a page, we print line, newline, and then just increment the page and print the next line. 
+
+\section{Page Numbering and Styles}
+
+Keeping track of the number of the page was implemented, we simply used the functions provided in the grammar any time we saw a page token to set the new page number/style. To print in different styles, we wrote a function, translate_page_no to translate to different page styles, consult that if you'd like the specifics. Converting to alphabet characters was relatively simple, we did it simply by adding an integer to the character 'a'. Converting to roman characters we did by using a function, converToRoman, that we got off of the internet (the attribution is in the code). 
+
+Every time a line is printed, we check to see if the page has completed, and if it has, we print the current page number in the current page style and increment it. When we print a new page number,we print it centered in the page and surround it by a new line on either side, which we assumed was a reasonable way to format this. Additionally, if the style is alph or Alph, and the page number is greater than 26, we revert to the arabic style until otherwise directed.
+
+
+\section{Vertical Spacing}
+
+This section was fairly straightforward. If we see the vertical spacing command we
+simply print out the N new lines (where N is the number specified) 
+
+See the function vertical_space for details.
+
+As an aside, since we were not asked to implement the hspace command we do not handle
+it. As a result, writing the hspace command in the middle of text will break that line
+of text (causing a newline to print). This happens in the test file latex.tst.
+
+\section{Italics/Roman Fonts}
+
+This section proved to be much more difficult than we expected. The first challenge
+was to figure out how to print out italicized text. We discovered a sequence of
+escape characters that controlled this in the Linux terminal so we decided to use that
+as the indication of italics text. A word processor should easily be able to do the same
+as the Linux terminal in this regard.
+
+\subsection{Setting flags}
+When we see an italics or roman slash command, we set the it_flag global variable 
+appropriately (we then use this variable when formatting text). This works nicely
+for the simple slash command, but this does not allow slash commands in curly braces
+to reset the font type at the end. Thus, we pass the value of the it_flag through the text register before
+we change it. This allows the curlyb options section to reset it once it has formatted the
+text.
+
+\subsection{Formatting the text}
+In generate_formatted_text, before filling the line at all we check whether or not the 
+escape characters should be printed. This happens if the current it_flag value does not
+match the value from the last time generate_formatted_text was called. The reason this works is because the slash commands interrupt the text options so each time there is a 
+font changing command generate_formatted_text will get called at some point before the next 
+time the font is changed again.
+
+If the it_flag value does not match the previous value, we copy the proper escape character
+sequence into the current position of the line buffer by calling functions set_italics and 
+clear_italics.
+
+\subsection{Handling the line buffer}
+The issue with this approach is our line buffer will be filled with characters that do not
+actually get printed (other than to signal to switch to and from italics). To manage this,
+we had to expand the line to be larger and keep track of the significant character count
+of the line. We called this count text_index. We also keep track of the character count
+of the escape characters, called spec_chars. This is useful when we right justify the line
+as we don''t' want to include the escape characters in the length of the line.
+
+\subsection{Printing differences}
+Another challenge was that as the slash commands and curly brace options interrupt
+textoptions, they would cause the text to be broken up. To deal with this, we decided
+to only print the line buffer when it was full or when we had reached points where the
+text for a given block should end (such as at the start of a new section, or the start
+of a new begin block). 
+
+More details can be found in the following functions:
+\begin{itemize}
+\item set_italics
+\item clear_italics
+\item right_justify
+\item generate_formatted_text
+\item print_line
+\end{itemize}
+
+\section{Paragraphs and Indentation}
+
+\subsection{Paragraphs}
+A new paragraph is detected in the source file when a ws option contains two newlines bac
+to back. In latex.l when we detect this we pass a newline as well as a tab up through the
+grammar which eventually gets stored into our textoption. Thus, we will see a newline
+character in the textoption that gets sent to generate_formatted_text and this is our 
+indication to start a new paragraph. To avoid messing up the line, when we detect this
+newline we immediately print it out and skip to the next iteration in
+generate_formatted_text. 
+
+\subsection{Indentation}
+A user can specify not to indent a new paragraph by using the newindent command. This gets
+handled by the code in latex.l which passes along a newline rather than a newline and a tab
+through the grammer if the no indent flag is set. This prevents the textoption from
+receiving the tab and thus prevents indentation.
+
+Also note that the no indent flag is set at each section and subsection header as the first
+line afterwards is not supposed to be indented. The no indent flag gets cleared in latex.l
+as it is not meant to persist.
+
+\section{Right Justification}
+This became somewhat tricky due to the escape characters from the italics section. In
+general, the function iterates until the length of meaningful text will fill the out width.
+The first space that occurs after a word is kept track of, then for each iteration we
+iterate through the string starting from that offset until we find a space. Once we find a 
+space, we add in a new space by shifting everything to the right one. We then move to the 
+position of the next non-space character in the line to avoid doubling up on adding spaces.
+
+Note that due to escape characters the text in latexout may not look justified. Rest
+assured this is only becuase of the presence of the escapes characters which would not be
+printed by a text processor that is processing the document. Note that the behavior works
+fine in an Ubuntu 16.04 terminal.
+
+\section{Single Blocks}
+Single blocks required some modification to the grammar, namely, when we saw a single block begin, we would do the following: First, we print the current buffer, so that we can focus on only the single text. We keep track of a variable single_flag, which gets set here. This flag is used any time we print text to override the linespacing and format the text with a single linebreak. Because we used single_flag like this, we did not have to do anything special to allow single to nest with itemize, enumerate, or center, as they all use the same print_line function which takes the single_flag into account.The flag stays set until we see a an end single token, at which point it is turned off. If the ws_flag is turned on for verbatim, it overrides the single_flag. 
+
+\section{Itemize And Enumerate}
+We used stacks to keep track of the stack of our items and enumerations. itemize_stack
+keeps track of the current nesting level of the blocks as well as the current option, 
+either itemize or enumerate. In addition, there is the enumeration_stack which keeps
+track of the count for each enumerate block on the stack. This allows us to nest
+itemize and enumerate blocks and be able to keep track of what we should be printing
+as well as keep seperate enumeration counts for each level (max of 3 levels).
+
+Additionally, we have styled each level differently as such:
+
+\begin{itemize}
+\item Itemize Level 1
+\begin{itemize}
+\item Itemize Level 3
+\begin{itemize}
+\item Itemize Level 3
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\begin{enumerate}
+\item Enumerate Level 1
+\begin{enumerate}
+\item Enumerate Level 3
+\begin{enumerate}
+\item Enumerate Level 3
+\end{enumerate}
+\end{enumerate}
+\end{enumerate}
+
+In order to get the right justification to worked, we used the size of the stack multiplied
+to the predefined tab spacing to subtract from the out width. This prevent the indentation
+from causing the line to overfill. The function print_line was modified to print out spaces
+according to the tab spacing and stack size before printing the line (which is at 0 if not
+in an itemize or enumerate environment, resulting in no indentation).
+
+For more details, please refer to the following:
+\begin{itemize}
+\item generate_item
+\item print_line
+\item stack implementation in util.c
+\end{itemize}
+
+\section{Center Blocks}
+In the grammar, center blocks work similarly to single and verbatim blocks, when the token is seen, the flag is set. In print_line, we look to see if the print_flag is set, and if so, we center it by padding the right side of the string with the necessary amount of spaces. This is done for all lines printed, including tables but excluding verbatim lines, for which we wrote a specific function center_verb_text which will be discussed in the verbatim section. Because tables are sometimes delayed in printing, we include a flag in the table struct that keeps track of if it should be centered when printed, and if we are printing a table, we set center_flag to the value of the table.centered flag for the duration of printing that table, and then reset to it's previous value at after printing the table.
+
+\section{Verbatim Blocks}
+For most text, we format the text using the generate_formatted_text function, but for verbatim, we generally print the textoption buffer raw. This preserves any newlines, whitespace, etc. If the center flag iset, instead of printing the buffer raw, we call center_verb_text which finds the length of the longest line (from newline to newline) and centers each line around that length before printing the line.
+
+\section{Tables}
+
+\subsection{Setting up the tables}
+Getting tables to work was one of the most challenging parts of this project. We defined a
+struct for a table in project.h. When a new table block is detected, the code in the bison
+file generates a new table and sets the current_table global to the new table. As the
+grammar parses the struct fields such as the column specification, label, caption, and 
+position it updates the table. As entries are discovered they are added to the table as
+well. We also keep track of whether the table was around or surrounded by a center block 
+so that we know to center the text when printing it. We assumed a single entry in a table 
+could not be more than 32 characters so it won''t' work with more than that at the moment,
+but this is easily changeable.
+
+\subsection{Printing the tables}
+To print a table we parse through each entry and divide it into cells based on the location
+of the ampersand. The maximum length of each column is noted so that the entries of each 
+column can be justified properly. Then, print_table iterates over the matrix of cells and
+justifies each (in accordance with the column spec), then adds the cell to the line buffer.
+At the end of each row, the line is printed to print the row. Once all the rows are 
+printed, if the table has a caption the caption is printed alongside the table id.
+
+\subsection{Relocating tables}
+We used a queue for tables with position 't' or 'b' so that we can delay printing
+them. Each time a new page is started print_page_number will look at the queue and print
+out the first page in it. This preserves the order in which the tables were input. We
+assume that if there are multiple pages queued up that we are only supposed to change the
+first. To print the 'b' tables, we check the line count each time it is incremented to see
+if the remaining lines match the lines it will take to print the table. If so, we print it.
+We followed the same assumption as above for the 'b' tables.
+
+This will leave us with the issue that we may have leftover tables at the end of the
+document. To fix this, we created a function cleanup_doc which repeatedly prints 't' and 'b'
+tables (along with the page number when there is a new page). The function finishes the 
+document by printing the last page number.
+
+For more details on tables, see the following:
+\begin{itemize}
+\item new_table
+\item free_table
+\item set_cols
+\item set_label
+\item set_caption
+\item add_entry
+\item table_justify
+\item print_table
+\item table_lines
+\item print_page_number
+\item end_doc_cleanup
+\item test_bottom
+\item print_bottom
+\item Table definition in project.h
+\end{itemize}
+
+\section{Type/Error Checking}
+
+\subsection{Block Matching}
+This is easy to do with a stack. We simply push all the end commands onto the block_stack
+(each with their own id), then when we see a begin command we pop the stack and make sure
+the id matches the current input. This ensures that we can not begin one type of block and
+then end another before another begin command as this is invalid in latex. If the blocks
+do not match, we throw an error and exit.
+
+\subsection{Tabular Specification}
+As we add entries to the table we check each one to make sure it is valid. We do this by
+checking the ampersand count to ensure that it is 1 less than the column count of the
+table. If it is not, we throw an error and exit.
+
+\section{Misc}
+We upped the text buffer from 512 bytes to 1024 as the text in latex.tst surpasses 512
+characters. For testing, we put all of our tests into latex.input.tst, so that we could test all functionality at the same time. There are some isolated tests in the directory ourTests/Basic/ that test single features of basic text processing. All commit messages/our log is contained in Project.log.
+
+\end{document}

@@ -57,7 +57,7 @@ cols            (r|l|c)*
 {word}			    {printf(" %s \n", yytext); strcpy(yylval.trans,yytext); return(WORD);} //change
 
 {ws}			    {printf("ws--%s--ws\n", yytext); 
-                    if ((strcmp(yytext, "\n\n") == 0) && (ws_flag == 0)){
+                    if ((substring(yytext, "\n\n") >= 0) && (ws_flag == 0)){
                         if(!noin_flag)
                             strcpy(yylval.trans, "\n     "); // 5 space indent
                         else

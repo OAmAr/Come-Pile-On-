@@ -10,12 +10,11 @@ To compile, you can either use the Makefile we provide, or compile by hand.
 Using the Makefile, you simply run the command `make` in the directory containing the Makefile and the project files, and the executable will be named "compiler"
 
 To do it manually, you can run the following commands (replacing "(EX)" with the name of the executable you desire.
-\begin{itemize}
 
+\begin{itemize}
      \item flex latex.l
      \item bison -vd latexp3c.y
      \item gcc latexp3c.tab.c -lfl -o (EX)
-
 \end{itemize}
 
 \subsection{Usage}
