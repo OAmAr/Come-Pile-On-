@@ -240,7 +240,7 @@ beginblock       :  beginendopts
                         if (center_flag) // centered verbatim text is special
                             center_verb_text(verb);
                         else // otherwise just dump out the text as is
-                            fprintf(fpout, "%s", verb); 
+                            print_verb_text(verb);
                     }
                     else if (single_flag) { 
                         generate_formatted_text($1); 
