@@ -1,0 +1,248 @@
+Date:   Tue Dec 12 21:00:46 2017 -0500
+
+    Added final bit of documentation
+--
+Date:   Tue Dec 12 20:52:45 2017 -0500
+
+    Added more tests and a lot of documentation
+--
+Date:   Tue Dec 12 18:20:07 2017 -0500
+
+    Merge branch 'master' of github.com:OAmAr/Come-Pile-On-
+--
+Date:   Tue Dec 12 18:19:56 2017 -0500
+
+    Merged
+--
+Date:   Tue Dec 12 18:19:13 2017 -0500
+
+    started documenting
+--
+Date:   Tue Dec 12 17:31:08 2017 -0500
+
+    Formatted a ton of comments, added test for sections and spacing
+--
+Date:   Tue Dec 12 17:30:08 2017 -0500
+
+    missed a semicolon on that last commit
+--
+Date:   Tue Dec 12 17:20:11 2017 -0500
+
+    Merged
+--
+Date:   Tue Dec 12 17:19:03 2017 -0500
+
+    Fixed italics and right justify
+--
+Date:   Tue Dec 12 16:24:13 2017 -0500
+
+    Merge branch 'master' of github.com:OAmAr/Come-Pile-On-
+--
+Date:   Tue Dec 12 16:23:39 2017 -0500
+
+    Starts pages at 1
+--
+Date:   Mon Dec 11 23:19:47 2017 -0500
+
+    Removed some nonsense about tmp_text_index
+--
+Date:   Mon Dec 11 23:05:24 2017 -0500
+
+    finished comments and stylized num/itemize, translate_page_no in there as well
+--
+Date:   Mon Dec 11 22:01:46 2017 -0500
+
+    merged
+--
+Date:   Mon Dec 11 22:00:54 2017 -0500
+
+    Started commenting, fixed vspace
+--
+Date:   Mon Dec 11 21:26:41 2017 -0500
+
+    Commented some functions
+--
+Date:   Mon Dec 11 21:06:12 2017 -0500
+
+    Added support for centered verbatim
+--
+Date:   Mon Dec 11 20:01:45 2017 -0500
+
+    Merge branch 'master' of github.com:OAmAr/Come-Pile-On-
+--
+Date:   Mon Dec 11 20:01:43 2017 -0500
+
+    IDK
+--
+Date:   Mon Dec 11 19:54:48 2017 -0500
+
+    centered tables baby
+--
+Date:   Mon Dec 11 17:45:12 2017 -0500
+
+    fixed some line printing issues
+--
+Date:   Mon Dec 11 16:25:32 2017 -0500
+
+    Cleaned up line printing
+--
+Date:   Mon Dec 11 15:17:34 2017 -0500
+
+    Nesting itemize/enum working now
+--
+Date:   Mon Dec 11 00:00:53 2017 -0500
+
+    Fixed some italics problems and stuff
+--
+Date:   Sun Dec 10 22:29:01 2017 -0500
+
+    Tables fully functional
+--
+Date:   Sun Dec 10 19:58:53 2017 -0500
+
+    Merged
+--
+Date:   Sun Dec 10 19:55:24 2017 -0500
+
+    Added header file
+--
+Date:   Sun Dec 10 19:54:43 2017 -0500
+
+    Added support for B table positions
+--
+Date:   Sun Dec 10 17:34:17 2017 -0500
+
+    Error checking for table cols
+--
+Date:   Sun Dec 10 16:09:25 2017 -0500
+
+    Merged
+--
+Date:   Sun Dec 10 16:06:21 2017 -0500
+
+    Tables and start of block matching
+--
+Date:   Sun Dec 10 15:54:37 2017 -0500
+
+    Forgot to add latex.l
+--
+Date:   Sun Dec 10 15:53:55 2017 -0500
+
+    Merge branch 'master' of github.com:OAmAr/Come-Pile-On-
+--
+Date:   Sun Dec 10 15:53:54 2017 -0500
+
+    Verbatim no centering, font newline issue
+--
+Date:   Sat Dec 9 15:59:23 2017 -0500
+
+    Merge
+--
+Date:   Sat Dec 9 15:55:39 2017 -0500
+
+    started tables
+--
+Date:   Sat Dec 9 15:53:19 2017 -0500
+
+    Fixed merge
+--
+Date:   Sat Dec 9 15:51:05 2017 -0500
+
+    Added centering support, start of verbatim
+--
+Date:   Sat Dec 9 14:47:15 2017 -0500
+
+    Fixed itemize printing over out width
+--
+Date:   Sat Dec 9 14:37:12 2017 -0500
+
+    Ignoring my log
+--
+Date:   Sat Dec 9 14:17:43 2017 -0500
+
+    Fixed single blockand itemize nesting
+--
+Date:   Sat Dec 9 13:54:52 2017 -0500
+
+    Nested itemization working?
+--
+Date:   Sat Dec 9 13:52:10 2017 -0500
+
+    Itemize and Enumerate working
+--
+Date:   Fri Dec 8 23:54:17 2017 -0500
+
+    Merge resolved
+--
+Date:   Fri Dec 8 23:40:24 2017 -0500
+
+    Italics somewhat working
+--
+Date:   Fri Dec 8 23:28:02 2017 -0500
+
+    Added stylistic page numbering, reverts to arabic if its alph and you go over 26
+--
+Date:   Fri Dec 8 20:28:46 2017 -0500
+
+    Trying to fix italics/ latexoptions line breaks but broke justification, plz send help
+--
+Date:   Fri Dec 8 11:54:26 2017 -0500
+
+    Prints italics, fixed the issue with printing textoptions in curlyboptions
+--
+Date:   Thu Dec 7 22:43:58 2017 -0500
+
+    Merge branch 'master' of github.com:OAmAr/Come-Pile-On-
+--
+Date:   Thu Dec 7 22:43:33 2017 -0500
+
+    Merged
+--
+Date:   Thu Dec 7 22:37:46 2017 -0500
+
+    Added page by default at end of doc
+--
+Date:   Thu Dec 7 22:37:25 2017 -0500
+
+    Italics partially working, vspace working
+--
+Date:   Thu Dec 7 22:06:11 2017 -0500
+
+    Added page number, not style
+--
+
+Date:   Thu Dec 7 21:15:08 2017 -0500
+
+    Right justify done
+--
+Date:   Thu Dec 7 20:56:34 2017 -0500
+
+    Added linespacing:
+--
+Date:   Thu Dec 7 20:29:01 2017 -0500
+
+    Added compiled files to gitignore
+--
+Date:   Thu Dec 7 20:27:21 2017 -0500
+
+    cleaned my mess
+--
+Date:   Thu Dec 7 20:22:51 2017 -0500
+
+    Merge branch 'master' of github.com:OAmAr/Come-Pile-On-
+--
+Date:   Thu Dec 7 20:22:32 2017 -0500
+
+    Fixed spacing on sections/subsections
+--
+Date:   Thu Dec 7 20:17:36 2017 -0500
+
+    Added noindent functionality by adding a flag and reseting it after its processed in latex.l
+--
+Date:   Thu Dec 7 19:57:11 2017 -0500
+
+     Fixed the Makefile
+--
+Date:   Thu Dec 7 19:51:59 2017 -0500
+
+    Init

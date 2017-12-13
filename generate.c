@@ -160,8 +160,11 @@ void print_line() {                                         // prints the line b
 void vertical_space(char* s) {
   int n = atoi(s);                                        // get int value of input
   int i;
-  for(i = 0; i < n; i++)                                  // print out n newlines
-    print_blank_line();
+  for(i = 0; i < n; i++){                                  // print out n newlines
+      print_blank_line();
+      if (check_done_page()){                                //check if we're done with the page 
+        print_page_number();                               //Print the page number if so
+      }
 }
 
 void generate_formatted_text(char* s){                    // generates string s as text
