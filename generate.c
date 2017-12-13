@@ -233,6 +233,9 @@ void center_verb_text(char *s){
       for (int z = 0; z<num_of_space_r; tmp_line2[z++]=' ');
       memcpy(tmp_line2+num_of_space_r, tmp_line, cur+1); //Centers that string
       fprintf(fpout, "%s", tmp_line2);                   //prints that string
+      incr_lines_so_far();
+      if (check_done_page())                                //check if we're done with the page 
+        print_page_number();                               //Print the page number if so
 
       cur = 0;                             //reset the string counter, move on to next new line terminated string
       bzero(tmp_line, slen);
