@@ -39,7 +39,6 @@ is performed. However, all other blanks,
 
 would  result  in a five space indent of
 
-
                     5
 
 the   paragraph.  When  the  blank  line
@@ -168,7 +167,6 @@ blocks  behave  in  a similar fashion to
 begin   end   blocks  in  a  programming
 
 language,  since  they  set  a scope. We
-
 
                     8
 

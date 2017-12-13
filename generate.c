@@ -149,20 +149,25 @@ void print_line() {                                         // prints the line b
   int i;
   for(i = 0; i < ITEM_SPACING; i++)                        // prints out spaces for items
     fprintf(fpout, " ");
-  fprintf(fpout, "%s%s", line, spacing[line_spacing]);     // prints the line followed by the amount of newlines dictated by the line spacing
-  fflush(fpout);
+  if(1+line_spacing > LINES_PER_PAGE-lines_so_far) {
+    fprintf(fpout, "%s\n", line);
+    fflush(fpout);
+    incr_lines_so_far();
+    print_page_number();
+  } else {
+    fprintf(fpout, "%s%s", line, spacing[line_spacing]);     // prints the line followed by the amount of newlines dictated by the line spacing
+    for (int x = 0; x <=line_spacing; x++){                  // increment the lines so far according to the line and line spacing
+      incr_lines_so_far();
+      if (check_done_page()){                                //check if we're done with the page 
+          print_page_number();                               //Print the page number if so
+          break;                                             //stop adding newlines 
+      }
+    }
+  }
 
   text_index = 0;                                          // reset the line
   spec_chars = 0;
   memset(line, 0, 128);
-
-  for (int x = 0; x <=line_spacing; x++){                  // increment the lines so far according to the line and line spacing
-    incr_lines_so_far();
-    if (check_done_page()){                                //check if we're done with the page 
-        print_page_number();                               //Print the page number if so
-        break;                                             //stop adding newlines 
-    }
-  }
   line_spacing = temp_line;                                // reset the line spacing back to the original value
 }
 
@@ -173,16 +178,8 @@ void vertical_space(char* s) {
   int n = atoi(s);                                        // get int value of input
   int i;
   for(i = 0; i < n; i++){                                  // print out n newlines
-<<<<<<< HEAD
     print_blank_line();
   }
-=======
-      print_blank_line();
-      if (check_done_page()){                                //check if we're done with the page 
-        print_page_number();                               //Print the page number if so
-      }
-    }
->>>>>>> cfa33f83eaf660d2d2d63b15254d2baf3b7e7dd2
 }
 
 void generate_formatted_text(char* s){                    // generates string s as text

@@ -351,7 +351,7 @@ void print_table(Table* table) {
     print_line();                            // print the row
   }
 
-  fprintf(fpout, "\n");                      // may need to change to reflect line spacing, could fill a blank space in line and print line
+  print_blank_line();                      // may need to change to reflect line spacing, could fill a blank space in line and print line
   char buf[64];                              // ASSUMPTION: table # + caption can't be more than 64 chars
   memset(buf, 0, 64);
   if(table->caption != NULL)                 // print out the table#+caption if a caption exists
