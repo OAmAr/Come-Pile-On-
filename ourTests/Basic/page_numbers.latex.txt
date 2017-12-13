@@ -1,0 +1,23 @@
+\begin{document}
+\pagenumbering{alph}
+\renewcommand{\baselinestretch}{1}
+This should be the only line of text on page 'a'
+\vspace{39}
+\Alph{2}
+
+This should be the only line of text on page 'B"
+\vspace{39}
+
+\Roman{4} 
+This should be the only line of text on page IV
+\vspace{39}
+\roman{10} 
+This should be the only line of text on page x
+\vspace{39}
+\arabic{1} 
+This should be the only line of text on page 1
+
+
+
+
+\end{document}

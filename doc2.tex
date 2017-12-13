@@ -1,0 +1,66 @@
+\begin{document}
+\pagenumbering{arabic} 
+\arabic{1} 
+\renewcommand{\baselinestretch}{1}
+
+\section{Compilation and Usage}
+\subsection{Compilation}
+To compile, you can either use the Makefile we provide, or compile by hand.
+
+Using the Makefile, you simply run the command `make` in the directory containing the Makefile and the project files, and the executable will be named "compiler"
+
+To do it manually, you can run the following commands (replacing "(EX)" with the name of the executable you desire.
+\begin{itemize}
+
+     \item flex latex.l
+     \item bison -vd latexp3c.y
+     \item gcc latexp3c.tab.c -lfl -o (EX)
+
+\end{itemize}
+
+\subsection{Usage}
+
+To use the compiler to compile a latex input file, you can use the script we provide, test.sh, or do it manually.
+
+To use test.sh, run the following commands (replacing (filename)  with the filename of the latex file you would like to compile):
+
+./test.sh  (filename)
+
+This will print the output of compiling your file to the console, as well as populating latextoc, latexout, and latexlog with the table of contents for your file, the compilation of your file, and any log messages generated during compilation, respectively.
+
+To compile manually, run the following commands, again replacing filename:
+
+cat  (filename) | ./compiler
+
+This will populate latextoc, latexout, and latexlog with the the table of contents for your file, the output of compiling your file, and any log messages that may have been generated during compilation, respectively.
+
+
+\section{Sections/Subsections/Table of Contents}
+
+The majority of these features were given to us as part of the handout, but we had to implement some fixes. Previously, subsections were off by one section number, because at each section the current section number gets incremented, and then subsections used that section header. To fix this, we simply call a subtracted one from the value subsections use to print their section number. Additionally, we noticed that the page number was always being writen to the table of contents as arabic, so we converted it to the proper style before printing it to the table of contents.
+
+When formatting the section/subsection headers, we assumed that a reasonable way to format would be to print two newlines before and one after the header, and incremement the line count by 4 to account for this. 
+
+\section{Linespacing}
+
+To implement line spacing, we used a global variable that was changed by the baselinestretch command. Any time we printed a line, we would use the linespacing variable as a key into an array of newlines, and used that as part of the formatting string every time we printed a line. To make this play nicely with single blocks, at the start of print line we keep track of the original linespacing value, and set linespacing equal to 1 if single is set. That way we can just use the print\_line function to print single blocks. At the end of print, we reset the linespacing variable to what it was before the call.
+
+One thing we assumed for this is that if linespacing after a line caused the page to roll over, you would not print the remaining spacing on the new page. That is, if we are in triple space and on line 39 of a page, we print line, newline, and then just increment the page and print the next line. 
+
+\section{Page Numbering and Styles}
+
+Keeping track of the number of the page was implemented, we simply used the functions provided in the grammar any time we saw a page token to set the new page number/style. To print in different styles, we wrote a function, translate_page_no to translate to different page styles, consult that if you'd like the specifics. Converting to alphabet characters was relatively simple, we did it simply by adding an integer to the character 'a'. Converting to roman characters we did by using a function, converToRoman, that we got off of the internet (the attribution is in the code). 
+
+Every time a line is printed, we check to see if the page has completed, and if it has, we print the current page number in the current page style and increment it. When we print a new page number,we print it centered in the page and surround it by a new line on either side, which we assumed was a reasonable way to format this. Additionally, if the style is alph or Alph, and the page number is greater than 26, we revert to the arabic style until otherwise directed.
+
+\section{Single Blocks}
+Single blocks required some modification to the grammar, namely, when we saw a single block begin, we would do the following: First, we print the current buffer, so that we can focus on only the single text. We keep track of a variable single_flag, which gets set here. This flag is used any time we print text to override the linespacing and format the text with a single linebreak. Because we used single_flag like this, we did not have to do anything special to allow single to nest with itemize, enumerate, or center, as they all use the same print_line function which takes the single_flag into account.The flag stays set until we see a an end single token, at which point it is turned off. If the ws_flag is turned on for verbatim, it overrides the single_flag. 
+
+\section{Center Blocks}
+In the grammar, center blocks work similarly to single and verbatim blocks, when the token is seen, the flag is set. In print_line, we look to see if the print_flag is set, and if so, we center it by padding the right side of the string with the necessary amount of spaces. This is done for all lines printed, including tables but excluding verbatim lines, for which we wrote a specific function center_verb_text which will be discussed in the verbatim section. Because tables are sometimes delayed in printing, we include a flag in the table struct that keeps track of if it should be centered when printed, and if we are printing a table, we set center_flag to the value of the table.centered flag for the duration of printing that table, and then reset to it's previous value at after printing the table.
+
+\section{Verbatim Block}
+For most text, we format the text using the generate_formatted_text function, but for verbatim, we generally print the textoption buffer raw. This preserves any newspace, formatting, 
+
+
+\end{document}
