@@ -1,0 +1,132 @@
+
+
+
+
+
+     A  block  of  a  enumerate within a
+
+
+single  environment  should  change  the
+
+
+spacing from its triple default. 
+
+
+     1. Single is for Single spacing
+
+
+     2.   Verbatim   allows   text  that
+
+
+     matches  the  what  you see is what
+
+
+     you get mode
+
+
+     3.  Itemize  uses ticks to indicate
+
+
+     items
+
+
+     4.  Center  allows  a  block  to be
+
+
+     centered
+
+
+     Now,  make sure that triple spacing
+
+
+
+                    vii
+
+is active again! 
+
+
+     1. Single is for Single spacing
+
+
+          ~   Single   is   for   Single
+
+
+          spacing. A nested itemize
+
+
+          ~  Verbatim  allows  text that
+
+
+          matches  the  what  you see is
+
+
+          what you get mode
+
+
+          ~   Itemize   uses   ticks  to
+
+
+          indicate items
+
+
+          ~  Center allows a block to be
+
+
+          centered
+
+
+     2.   Verbatim   allows   text  that
+
+
+     matches  the  what  you see is what
+
+
+     you get mode
+
+
+
+                    viii
+
+     3.  Itemize  uses ticks to indicate
+
+
+     items
+
+
+          I.   Single   is   for  Single
+
+
+          spacing.  A  second  level  of
+
+
+          enums!!!!
+
+
+          II.  Center  allows a block to
+
+
+          be centered
+
+
+     4.  Center  allows  a  block  to be
+
+
+     centered
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    ix
+
